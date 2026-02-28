@@ -28,6 +28,39 @@
     }
     .game-font { font-family: 'Fredoka', sans-serif; }
 
+    /* BACKGROUND IMAGES (LOCAL REPO PATHS) */
+    .bg-home    { background: url("background-ui/home.webp") center/cover no-repeat; }
+    .bg-map     { background: url("background-ui/map.webp") center/cover no-repeat; }
+    .bg-tutorial{ background: url("background-ui/tutorial.webp") center/cover no-repeat; }
+    .bg-shop    { background: url("background-ui/shop.webp") center/cover no-repeat; }
+
+    .bg-game-easy    { background: url("background-ui/game-easy.webp") center/cover no-repeat; }
+    .bg-game-normal  { background: url("background-ui/game-normal.webp") center/cover no-repeat; }
+    .bg-game-hard    { background: url("background-ui/game-hard.webp") center/cover no-repeat; }
+    .bg-game-extreme { background: url("background-ui/game-extreme.webp") center/cover no-repeat; }
+
+    /* overlay for readability */
+    .screen::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.55));
+      pointer-events:none;
+      z-index:0;
+    }
+    .screen > *{ position:relative; z-index:1; }
+
+    /* title background */
+    .title-bg{
+      background: url("background-ui/title.webp") center/cover no-repeat;
+      padding: 14px 18px;
+      border-radius: 24px;
+      border: 2px solid rgba(255,255,255,.18);
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+      display:inline-block;
+      backdrop-filter: blur(4px);
+    }
+
     /* ANIMATIONS */
     @keyframes shake {
       0%, 100% { transform: translateX(0) rotate(0deg); }
@@ -165,15 +198,17 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 </head>
 
-<body class="h-full w-full bg-gradient-to-br from-emerald-800 via-teal-700 to-cyan-800 game-font overflow-hidden">
+<body class="h-full w-full game-font overflow-hidden">
   <div id="app" class="h-full w-full relative flex flex-col">
 
     <!-- HOME SCREEN -->
-    <div id="home-screen" class="screen active flex-col items-center justify-center p-6 text-center">
-      <div class="mb-8 animate-bounce">
+    <div id="home-screen" class="screen active bg-home flex-col items-center justify-center p-6 text-center">
+      <div class="mb-8">
         <div class="text-7xl mb-4 float">🌿</div>
-        <h1 id="game-title" class="text-5xl font-bold text-white mb-2 drop-shadow-xl">EcoRush</h1>
-        <p class="text-emerald-100 text-xl">Barangay Cleanup Challenge</p>
+        <div class="title-bg mb-2">
+          <h1 id="game-title" class="text-5xl font-bold text-white drop-shadow-xl">EcoRush</h1>
+        </div>
+        <p class="text-emerald-100 text-xl drop-shadow">Barangay Cleanup Challenge</p>
       </div>
 
       <div class="space-y-4 w-full max-w-xs mb-8">
@@ -195,10 +230,10 @@
     </div>
 
     <!-- TUTORIAL SCREEN -->
-    <div id="tutorial-screen" class="screen flex-col p-4">
+    <div id="tutorial-screen" class="screen bg-tutorial flex-col p-4">
       <div class="flex items-center justify-between mb-4">
         <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white">How to Play</h2>
+        <h2 class="text-xl font-bold text-white drop-shadow">How to Play</h2>
         <div class="w-10"></div>
       </div>
 
@@ -253,10 +288,10 @@
     </div>
 
     <!-- MAP SCREEN -->
-    <div id="map-screen" class="screen flex-col p-4">
+    <div id="map-screen" class="screen bg-map flex-col p-4">
       <div class="flex items-center justify-between mb-4">
         <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white">Select Level</h2>
+        <h2 class="text-xl font-bold text-white drop-shadow">Select Level</h2>
         <button onclick="showScreen('shop-screen')" class="p-2 bg-amber-500/30 rounded-full"><span class="text-xl">🛒</span></button>
       </div>
 
@@ -269,10 +304,10 @@
     </div>
 
     <!-- SHOP SCREEN -->
-    <div id="shop-screen" class="screen flex-col p-4">
+    <div id="shop-screen" class="screen bg-shop flex-col p-4">
       <div class="flex items-center justify-between mb-4">
         <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white">Shop</h2>
+        <h2 class="text-xl font-bold text-white drop-shadow">Shop</h2>
         <div class="w-10"></div>
       </div>
 
@@ -393,7 +428,7 @@
           <span id="contamination-percent" class="text-xs text-red-300">0%</span>
         </div>
         <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
-          <div id="contamination-bar" class="h-full bg-gradient-to-r from-yellow-500 to-red-500 contamination-bar" style="width: 0%"></div>
+          <div id="contamination-bar" class="h-full contamination-bar" style="width: 0%"></div>
         </div>
       </div>
 
@@ -499,35 +534,70 @@
 
   <script>
     // =========================================================
-    // ✅ ACCURATE TRASH IMAGES (WHOLE IMPLEMENTATION)
-    // - Uses item.imageSrc if you provide one
-    // - If not provided, it automatically uses a correct Twemoji icon
-    // - If Twemoji fails, it falls back to the plain emoji
+    // ✅ TRASH ICONS: EASY MODE
+    // - Put images in: trash-icons/
+    // - Name files SAME AS item.name but slugified:
+    //   "Banana Peel" -> trash-icons/banana-peel.webp
+    // - If icon not found, auto fallback to Twemoji, then emoji text
     // =========================================================
 
+    const TRASH_ICON_FOLDER = "trash-icons";
+
+    function slugify(name) {
+      return name
+        .toLowerCase()
+        .trim()
+        .replace(/['"]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    }
+
+    function getTrashIconSrc(item) {
+      return `${TRASH_ICON_FOLDER}/${slugify(item.name)}.webp`;
+    }
+
+    function getEmojiImageSrc(emoji) {
+      const codePoints = Array.from(emoji)
+        .map(char => char.codePointAt(0).toString(16))
+        .filter(code => code !== "fe0f");
+      return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${codePoints.join("-")}.png`;
+    }
+
+    function getDifficultyName(level){
+      if (level <= 5) return "easy";
+      if (level <= 15) return "normal";
+      if (level <= 25) return "hard";
+      return "extreme";
+    }
+
+    function applyGameBackground(level){
+      const gameScreen = document.getElementById("game-screen");
+      gameScreen.classList.remove("bg-game-easy","bg-game-normal","bg-game-hard","bg-game-extreme");
+      gameScreen.classList.add(`bg-game-${getDifficultyName(level)}`);
+    }
+
     // ========== TRASH DATABASE ==========
-    // NOTE: I removed the old Unsplash photo links because they can be inaccurate/random.
-    // You can still add your own accurate photos later by adding `imageSrc: 'your-url.png'` to any item.
+    // NOTE: imageSrc is no longer needed. Just add the name + emoji.
     const TRASH_DATABASE = {
       biodegradable: [
-        { name: "Banana Peel", emoji: "🍌", imageSrc: "https://raw.githubusercontent.com/hinokunn1/ecorush/ec0c8c72e1d12e431fb310242a80ef14ae6a6ad4/1644DDD1-F665-42E5-A092-7589DCD7B356.webp" },
-        { name: "Leftover Rice", emoji: "🍚", imageSrc: "https://raw.githubusercontent.com/hinokunn1/ecorush/3b57c1736dc4563c5080464b5f594ee200a4faf1/img/1.png" },
-        { name: "Fish Bones", emoji: "🐟", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/2.png" },
-        { name: "Chicken Bones", emoji: "🍗", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/3.png" },
-        { name: "Mango Seed", emoji: "🥭", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/4.png" },
-        { name: "Coconut Husk", emoji: "🥥", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/5.png" },
-        { name: "Vegetable Peels", emoji: "🥕", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/6.png" },
-        { name: "Corn Cob", emoji: "🌽", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/7.png" },
-        { name: "Egg Shells", emoji: "🥚", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/8.png" },
-        { name: "Calamansi Peel", emoji: "🍋", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/9.png" },
-        { name: "Used Tea Leaves", emoji: "🍵", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/10.png" },
-        { name: "Coffee Grounds", emoji: "☕", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/11.png" },
-        { name: "Wilted Leaves", emoji: "🍂", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/12.png" },
-        { name: "Bread Leftover", emoji: "🍞", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/13.png" },
-        { name: "Fruit Peels", emoji: "🍊", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/14.png" },
-        { name: "Pineapple Crown", emoji: "🍍", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/15.png" },
-        { name: "Watermelon Rind", emoji: "🍉", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/16.png" },
-        { name: "Peanut Shells", emoji: "🥜", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/17.png" }
+        { name: "Banana Peel", emoji: "🍌" },
+        { name: "Leftover Rice", emoji: "🍚" },
+        { name: "Fish Bones", emoji: "🐟" },
+        { name: "Chicken Bones", emoji: "🍗" },
+        { name: "Mango Seed", emoji: "🥭" },
+        { name: "Coconut Husk", emoji: "🥥" },
+        { name: "Vegetable Peels", emoji: "🥕" },
+        { name: "Corn Cob", emoji: "🌽" },
+        { name: "Egg Shells", emoji: "🥚" },
+        { name: "Calamansi Peel", emoji: "🍋" },
+        { name: "Used Tea Leaves", emoji: "🍵" },
+        { name: "Coffee Grounds", emoji: "☕" },
+        { name: "Wilted Leaves", emoji: "🍂" },
+        { name: "Bread Leftover", emoji: "🍞" },
+        { name: "Fruit Peels", emoji: "🍊" },
+        { name: "Pineapple Crown", emoji: "🍍" },
+        { name: "Watermelon Rind", emoji: "🍉" },
+        { name: "Peanut Shells", emoji: "🥜" }
       ],
       recyclable: [
         { name: "Water Bottle", emoji: "🧴" },
@@ -591,7 +661,6 @@
       ]
     };
 
-    // Decoy items (confusing items that look similar)
     const DECOY_ITEMS = [
       { name: "Dirty Water Bottle", emoji: "🧴", category: "residual", looksLike: "recyclable" },
       { name: "Clean Paper Cup", emoji: "🥤", category: "recyclable", looksLike: "residual", needsCleaning: true },
@@ -599,7 +668,6 @@
       { name: "Clean Styrofoam", emoji: "📦", category: "residual", looksLike: "recyclable" }
     ];
 
-    // ========== LEVEL CONFIGURATION ==========
     function getLevelConfig(level) {
       let trashCount = 5 + Math.floor(level * 0.8);
       let hazardChance = Math.min(0.1 + level * 0.01, 0.4);
@@ -635,7 +703,6 @@
       };
     }
 
-    // ========== GAME STATE ==========
     let gameState = {
       coins: 0,
       levelStars: {},
@@ -659,7 +726,6 @@
       coinsEarned: 0
     };
 
-    // ========== PERSISTENCE ==========
     function saveGame() {
       localStorage.setItem('ecoRushSave', JSON.stringify(gameState));
     }
@@ -673,7 +739,6 @@
       updateAllCoinDisplays();
     }
 
-    // ========== UI HELPERS ==========
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
@@ -715,7 +780,6 @@
       setTimeout(() => sparkle.remove(), 600);
     }
 
-    // ========== LEVEL MAP ==========
     function renderLevelMap() {
       const grid = document.getElementById('level-grid');
       grid.innerHTML = '';
@@ -732,7 +796,7 @@
         section.className = 'px-4';
 
         const title = document.createElement('h3');
-        title.className = 'text-lg font-bold text-white mb-3 ml-2';
+        title.className = 'text-lg font-bold text-white mb-3 ml-2 drop-shadow';
         title.textContent = difficulty.name;
         section.appendChild(title);
 
@@ -765,7 +829,6 @@
       });
     }
 
-    // ========== SHOP ==========
     function renderShop() {
       const inventory = document.getElementById('inventory-display');
       inventory.innerHTML = `
@@ -792,23 +855,6 @@
       }
     }
 
-    // ========== IMAGE HELPERS (ACCURATE ICONS) ==========
-    function getEmojiImageSrc(emoji) {
-      const codePoints = Array.from(emoji)
-        .map(char => char.codePointAt(0).toString(16))
-        .filter(code => code !== 'fe0f');
-      return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${codePoints.join('-')}.png`;
-    }
-
-    // Ensures every item has a valid imageSrc:
-    // - if you set a custom imageSrc, it will use that
-    // - otherwise it uses Twemoji (accurate + consistent)
-    function ensureItemImage(item) {
-      if (!item.imageSrc) item.imageSrc = getEmojiImageSrc(item.emoji);
-      return item;
-    }
-
-    // ========== GAME LOGIC ==========
     function startLevel(level) {
       currentGame = {
         level,
@@ -827,6 +873,8 @@
       };
 
       showScreen('game-screen');
+      applyGameBackground(level);
+
       updateGameUI();
       updateBoostButtons();
       spawnWave();
@@ -878,7 +926,6 @@
           item = getRandomItem('hazardous');
         } else if (config.useDecoys && Math.random() < 0.15) {
           item = { ...DECOY_ITEMS[Math.floor(Math.random() * DECOY_ITEMS.length)] };
-          item = ensureItemImage(item);
         } else {
           const categories = ['biodegradable', 'recyclable', 'residual'];
           const cat = categories[Math.floor(Math.random() * categories.length)];
@@ -907,10 +954,9 @@
     function getRandomItem(category) {
       const items = TRASH_DATABASE[category];
       const item = { ...items[Math.floor(Math.random() * items.length)], category };
-      return ensureItemImage(item);
+      return item;
     }
 
-    // ========== TRASH CARD (NOW USES ACCURATE IMAGE) ==========
     function createTrashCard(item) {
       const card = document.createElement('div');
       card.className = 'trash-card bg-white rounded-xl p-2 shadow-lg cursor-grab flex flex-col items-center pop-in';
@@ -924,18 +970,21 @@
       imgDiv.className = 'relative w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg mb-1 overflow-hidden';
 
       const img = document.createElement('img');
-      // Prefer item.imageSrc (custom). If absent, ensureItemImage() already filled Twemoji.
-      img.src = item.imageSrc;
+      img.src = getTrashIconSrc(item); // ✅ local icon
       img.alt = item.name;
-      img.className = 'w-10 h-10 object-contain'; // consistent "game icon" style
+      img.className = 'w-10 h-10 object-contain';
       img.loading = 'lazy';
 
       img.onerror = function () {
-        img.style.display = 'none';
-        const fallback = document.createElement('span');
-        fallback.textContent = item.emoji;
-        fallback.className = 'text-3xl';
-        imgDiv.appendChild(fallback);
+        this.onerror = null;
+        this.src = getEmojiImageSrc(item.emoji); // fallback to Twemoji
+        this.onerror = function () {
+          this.style.display = 'none';
+          const fallback = document.createElement('span');
+          fallback.textContent = item.emoji;
+          fallback.className = 'text-3xl';
+          imgDiv.appendChild(fallback);
+        };
       };
 
       imgDiv.appendChild(img);
@@ -955,10 +1004,7 @@
       card.appendChild(name);
 
       if (needsClean) {
-        card.onclick = (e) => {
-          e.stopPropagation();
-          cleanItem(item.id);
-        };
+        card.onclick = (e) => { e.stopPropagation(); cleanItem(item.id); };
       }
 
       setupDrag(card, item);
@@ -1020,8 +1066,7 @@
         card.style.left = (touch.clientX - offsetX) + 'px';
         card.style.top = (touch.clientY - offsetY) + 'px';
 
-        const bins = document.querySelectorAll('.bin');
-        bins.forEach(bin => {
+        document.querySelectorAll('.bin').forEach(bin => {
           const binRect = bin.getBoundingClientRect();
           const cx = touch.clientX, cy = touch.clientY;
 
@@ -1040,10 +1085,8 @@
 
         const touch = e.changedTouches ? e.changedTouches[0] : e;
 
-        const bins = document.querySelectorAll('.bin');
         let droppedBin = null;
-
-        bins.forEach(bin => {
+        document.querySelectorAll('.bin').forEach(bin => {
           bin.classList.remove('highlight');
           const binRect = bin.getBoundingClientRect();
           if (touch.clientX >= binRect.left && touch.clientX <= binRect.right &&
@@ -1060,7 +1103,6 @@
         }
       };
 
-      // Avoid stacking duplicate listeners if cleanItem re-calls setupDrag
       card.onmousedown = null;
       card.ontouchstart = null;
 
@@ -1093,10 +1135,9 @@
 
         const r = card.getBoundingClientRect();
         createSparkle(r.left + 35, r.top + 35);
+
         card.remove();
-
         currentGame.trashItems = currentGame.trashItems.filter(i => i.id !== item.id);
-
         updateGameUI();
 
         if (currentGame.trashItems.length === 0) {
@@ -1168,7 +1209,6 @@
       });
     }
 
-    // ========== BOOSTS ==========
     function useBoost(type) {
       if (gameState.boosts[type] <= 0) return;
 
@@ -1191,7 +1231,6 @@
 
     function useHint() {
       if (currentGame.trashItems.length === 0) return;
-
       const item = currentGame.trashItems[0];
       const card = document.querySelector(`[data-id="${item.id}"]`);
       const bin = document.querySelector(`[data-bin="${item.category}"]`);
@@ -1268,7 +1307,6 @@
       }, 5000);
     }
 
-    // ========== GAME END ==========
     function endGame(won, message = '') {
       if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
 
@@ -1367,7 +1405,6 @@
       showScreen('map-screen');
     }
 
-    // ========== ELEMENT SDK ==========
     const defaultConfig = { game_title: 'EcoRush' };
 
     if (window.elementSdk) {
@@ -1389,7 +1426,6 @@
       });
     }
 
-    // ========== INIT ==========
     loadGame();
 
     if (gameState.coins === 0 && Object.keys(gameState.levelStars).length === 0) {
