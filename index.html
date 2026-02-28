@@ -201,32 +201,45 @@
   <div id="app" class="h-full w-full relative flex flex-col">
 
     <!-- HOME SCREEN -->
-    <div id="home-screen" class="screen active bg-home flex-col items-center justify-center p-6 text-center">
-      <div class="mb-8">
-        <div class="text-7xl mb-4 float">🌿</div>
-        <div class="title-bg mb-2">
-          <h1 id="game-title" class="text-5xl font-bold text-white drop-shadow-xl">EcoRush</h1>
-        </div>
-        <p class="text-emerald-100 text-xl drop-shadow">Barangay Cleanup Challenge</p>
-      </div>
+  <!-- HOME SCREEN (SPLASH STYLE) -->
+<div id="home-screen" class="screen active bg-home flex-col items-center justify-end p-6 text-center">
 
-      <div class="space-y-4 w-full max-w-xs mb-8">
-        <button onclick="showScreen('map-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200 pop-in">🎮 Play</button>
-        <button onclick="showScreen('shop-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200">🛒 Shop</button>
-        <button onclick="showScreen('tutorial-screen')" class="w-full py-3 px-6 bg-white/20 text-white text-lg font-semibold rounded-2xl backdrop-blur-sm hover:bg-white/30 transition-all duration-200">📖 How to Play</button>
-      </div>
-
-      <div class="flex gap-6 text-center">
-        <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-3xl">🪙</span>
-          <span id="home-coins" class="text-2xl font-bold text-white">0</span>
-        </div>
-        <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-2xl" id="home-lives-icon">❤️</span>
-          <span id="home-lives" class="text-2xl font-bold text-white">5</span>
-        </div>
-      </div>
+  <!-- Title/Logo center -->
+  <div class="home-center">
+    <div class="home-logo-wrap">
+      <div class="home-logo" id="game-title">EcoRush</div>
     </div>
+
+    <!-- Buttons directly BELOW title -->
+    <div class="home-actions">
+      <button onclick="showScreen('map-screen')" class="home-btn home-btn-primary">
+        🎮 Play
+      </button>
+
+      <button onclick="showScreen('shop-screen')" class="home-btn home-btn-secondary">
+        🛒 Shop
+      </button>
+
+      <button onclick="showScreen('tutorial-screen')" class="home-btn home-btn-tertiary">
+        📖 How to Play
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom HUD (coins & lives) -->
+  <div class="home-bottom">
+    <div class="home-pill home-coins">
+      <span class="text-2xl">🪙</span>
+      <span id="home-coins" class="home-pill-num">0</span>
+    </div>
+
+    <div class="home-pill home-lives">
+      <span class="text-2xl" id="home-lives-icon">❤️</span>
+      <span id="home-lives" class="home-pill-num">5</span>
+    </div>
+  </div>
+
+</div>
 
     <!-- TUTORIAL SCREEN -->
     <div id="tutorial-screen" class="screen bg-tutorial flex-col p-4">
