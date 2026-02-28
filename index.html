@@ -202,32 +202,92 @@
   <div id="app" class="h-full w-full relative flex flex-col">
 
     <!-- HOME SCREEN -->
-    <div id="home-screen" class="screen active bg-home flex-col items-center justify-center p-6 text-center">
-      <div class="mb-8">
-         <div class="text-7xl mb-4 float"></div>
-        <div class="title-bg mb-2">
-          <h1 id="game-title" class="text-5xl font-bold text-white drop-shadow-xl"></h1>
-        </div>
-        <p class="text-emerald-100 text-xl drop-shadow"></p>
-      </div>
+<!-- HOME SCREEN -->
+<div id="home-screen" class="screen active bg-home flex flex-col items-center justify-center p-6 text-center min-h-screen">
 
-      <div class="space-y-4 w-full max-w-xs mb-8">
-        <button onclick="showScreen('map-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200 pop-in">🎮 Play</button>
-        <button onclick="showScreen('shop-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200">🛒 Shop</button>
-        <button onclick="showScreen('tutorial-screen')" class="w-full py-3 px-6 bg-white/20 text-white text-lg font-semibold rounded-2xl backdrop-blur-sm hover:bg-white/30 transition-all duration-200">📖 How to Play</button>
-      </div>
+  <style>
+    /* FLOAT ANIMATION */
+    @keyframes floatTitle {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
 
-      <div class="flex gap-6 text-center">
-        <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-3xl">🪙</span>
-          <span id="home-coins" class="text-2xl font-bold text-white">0</span>
-        </div>
-        <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-2xl" id="home-lives-icon">❤️</span>
-          <span id="home-lives" class="text-2xl font-bold text-white">5</span>
-        </div>
-      </div>
+    .title-float {
+      animation: floatTitle 3s ease-in-out infinite;
+    }
+  </style>
+
+  <!-- TITLE SECTION -->
+  <div class="mb-10">
+    
+    <h1 id="game-title"
+        class="title-float text-6xl sm:text-7xl md:text-8xl font-extrabold text-white leading-tight"
+        style="text-shadow:
+        -4px -4px 0 #065f46,
+         4px -4px 0 #065f46,
+        -4px  4px 0 #065f46,
+         4px  4px 0 #065f46,
+         0px  8px 20px rgba(0,0,0,0.5);">
+      EcoRush
+    </h1>
+
+    <p class="text-emerald-100 text-lg mt-2 drop-shadow-lg">
+      Clean. Sort. Save the Planet.
+    </p>
+
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="space-y-5 w-full max-w-xs mb-10">
+
+    <button onclick="showScreen('map-screen')" 
+      class="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 
+      text-white text-xl font-bold rounded-2xl shadow-xl 
+      hover:scale-105 active:scale-95 transition-all duration-200">
+      🎮 Play
+    </button>
+
+    <button onclick="showScreen('shop-screen')" 
+      class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 
+      text-white text-xl font-bold rounded-2xl shadow-xl 
+      hover:scale-105 active:scale-95 transition-all duration-200">
+      🛒 Shop
+    </button>
+
+    <button onclick="showScreen('tutorial-screen')" 
+      class="w-full py-3 px-6 bg-white/20 backdrop-blur-md
+      text-white text-lg font-semibold rounded-2xl 
+      hover:bg-white/30 transition-all duration-200">
+      📖 How to Play
+    </button>
+
+  </div>
+
+  <!-- COINS & LIVES -->
+  <div class="flex gap-6 text-center">
+
+    <!-- COINS -->
+    <div class="flex items-center gap-3 bg-gradient-to-r 
+      from-amber-500 to-orange-500 px-6 py-3 rounded-full shadow-xl">
+
+      <span class="text-3xl">🪙</span>
+      <span id="home-coins" class="text-2xl font-bold text-white">162</span>
+
     </div>
+
+    <!-- LIVES -->
+    <div class="flex items-center gap-3 bg-gradient-to-r 
+      from-red-500 to-pink-500 px-6 py-3 rounded-full shadow-xl">
+
+      <span class="text-2xl">❤️</span>
+      <span id="home-lives" class="text-2xl font-bold text-white">5</span>
+
+    </div>
+
+  </div>
+
+</div>
 
     <!-- TUTORIAL SCREEN -->
     <div id="tutorial-screen" class="screen bg-tutorial flex-col p-4">
