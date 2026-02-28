@@ -1,0 +1,1405 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>EcoRush: Barangay Cleanup Challenge</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0891b2 100%);
+    }
+    .game-font { font-family: 'Fredoka', sans-serif; }
+
+    /* ANIMATIONS */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      20% { transform: translateX(-12px) rotate(-3deg); }
+      40% { transform: translateX(12px) rotate(3deg); }
+      60% { transform: translateX(-12px) rotate(-3deg); }
+      80% { transform: translateX(12px) rotate(3deg); }
+    }
+    @keyframes sparkle {
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+      100% { transform: scale(0) rotate(360deg); opacity: 0; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5), inset 0 0 20px rgba(34, 197, 94, 0.2); }
+      50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8), inset 0 0 30px rgba(34, 197, 94, 0.3); }
+    }
+    @keyframes slide-up {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes pop-in {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes bounce-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    @keyframes toast-slide {
+      from { transform: translateY(-120%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes timer-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* UTILITY CLASSES */
+    .bin { transition: all 0.2s ease; position: relative; overflow: hidden; }
+    .bin.highlight {
+      transform: scale(1.12);
+      box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 20px rgba(255,255,255,0.3);
+    }
+    .bin.wrong { animation: shake 0.5s ease; }
+
+    .trash-card {
+      transition: all 0.15s ease;
+      touch-action: none;
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
+    }
+    .trash-card:active { cursor: grabbing; }
+    .trash-card.dragging {
+      transform: scale(1.15) rotate(8deg);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+      z-index: 1000;
+      filter: brightness(1.1);
+    }
+    .trash-card.correct { animation: pop-in 0.5s ease forwards; }
+    .sparkle { animation: sparkle 0.7s ease-out forwards; pointer-events: none; }
+    .float { animation: float 2.5s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 1.5s ease-in-out infinite; }
+    .slide-up { animation: slide-up 0.3s ease forwards; }
+    .pop-in { animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+    .bounce-in { animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+    .toast { animation: toast-slide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+    .star { transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+    .star.earned {
+      color: #fbbf24;
+      text-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 50px rgba(251, 191, 36, 0.6);
+      animation: bounce-in 0.5s ease forwards;
+    }
+    .star.empty { color: #6b7280; opacity: 0.3; }
+
+    .contamination-bar {
+      transition: all 0.3s ease;
+      background: linear-gradient(90deg, #f59e0b, #ef4444, #991b1b);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .level-node { transition: all 0.2s ease; border-radius: 16px; position: relative; overflow: hidden; }
+    .level-node:not(.locked) { cursor: pointer; }
+    .level-node:not(.locked):active { transform: scale(0.92); }
+    .level-node.locked { filter: grayscale(1) brightness(0.5); opacity: 0.7; }
+    .level-node::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .level-node:not(.locked):hover::before { opacity: 1; }
+
+    .screen {
+      display: none;
+      height: 100%;
+      width: 100%;
+      flex-direction: column;
+      overflow-y: auto;
+      position: absolute;
+      inset: 0;
+    }
+    .screen.active { display: flex; }
+
+    .boost-btn { transition: all 0.15s ease; border: 2px solid rgba(255,255,255,0.3); }
+    .boost-btn:not(:disabled) { cursor: pointer; }
+    .boost-btn:not(:disabled):active { transform: scale(0.92); }
+    .boost-btn:disabled { opacity: 0.4; filter: grayscale(0.7); }
+
+    .clean-overlay { animation: pulse 0.8s infinite; background: linear-gradient(135deg, rgba(202, 138, 4, 0.9), rgba(177, 98, 0, 0.9)); }
+    .timer-critical { animation: timer-pulse 0.5s ease infinite; color: #fca5a5; font-weight: 800; }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+  </style>
+
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+
+<body class="h-full w-full bg-gradient-to-br from-emerald-800 via-teal-700 to-cyan-800 game-font overflow-hidden">
+  <div id="app" class="h-full w-full relative flex flex-col">
+
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen active flex-col items-center justify-center p-6 text-center">
+      <div class="mb-8 animate-bounce">
+        <div class="text-7xl mb-4 float">🌿</div>
+        <h1 id="game-title" class="text-5xl font-bold text-white mb-2 drop-shadow-xl">EcoRush</h1>
+        <p class="text-emerald-100 text-xl">Barangay Cleanup Challenge</p>
+      </div>
+
+      <div class="space-y-4 w-full max-w-xs mb-8">
+        <button onclick="showScreen('map-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200 pop-in">🎮 Play</button>
+        <button onclick="showScreen('shop-screen')" class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200">🛒 Shop</button>
+        <button onclick="showScreen('tutorial-screen')" class="w-full py-3 px-6 bg-white/20 text-white text-lg font-semibold rounded-2xl backdrop-blur-sm hover:bg-white/30 transition-all duration-200">📖 How to Play</button>
+      </div>
+
+      <div class="flex gap-6 text-center">
+        <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 rounded-full shadow-lg">
+          <span class="text-3xl">🪙</span>
+          <span id="home-coins" class="text-2xl font-bold text-white">0</span>
+        </div>
+        <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-6 py-3 rounded-full shadow-lg">
+          <span class="text-2xl" id="home-lives-icon">❤️</span>
+          <span id="home-lives" class="text-2xl font-bold text-white">5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTORIAL SCREEN -->
+    <div id="tutorial-screen" class="screen flex-col p-4">
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
+        <h2 class="text-xl font-bold text-white">How to Play</h2>
+        <div class="w-10"></div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-4 pb-4">
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-2">🎯 Goal</h3>
+          <p class="text-emerald-100">Sort all trash items into the correct bins before time runs out!</p>
+        </div>
+
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-2">🗑️ The 4 Bins</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">🥬</span>
+              <span class="text-emerald-100"><strong>Biodegradable</strong> - Food scraps, plant waste</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">♻️</span>
+              <span class="text-emerald-100"><strong>Recyclable</strong> - Clean plastic, metal, paper</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center">🗑️</span>
+              <span class="text-emerald-100"><strong>Residual</strong> - Non-recyclable waste</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">☠️</span>
+              <span class="text-emerald-100"><strong>Hazardous</strong> - Batteries, chemicals</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-2">⚡ Tips</h3>
+          <ul class="text-emerald-100 text-sm space-y-1">
+            <li>• Build streaks for bonus points!</li>
+            <li>• Some items need cleaning first - tap them!</li>
+            <li>• Watch the contamination meter!</li>
+            <li>• Buy boosts in the shop!</li>
+          </ul>
+        </div>
+
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-2">🚀 Boosts</h3>
+          <div class="space-y-2 text-sm text-emerald-100">
+            <p><strong>💡 Hint</strong> - Shows the correct bin</p>
+            <p><strong>🛡️ Shield</strong> - Blocks next penalty</p>
+            <p><strong>🌀 Vacuum</strong> - Auto-sorts one item</p>
+            <p><strong>❄️ Freeze</strong> - Stops the timer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP SCREEN -->
+    <div id="map-screen" class="screen flex-col p-4">
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
+        <h2 class="text-xl font-bold text-white">Select Level</h2>
+        <button onclick="showScreen('shop-screen')" class="p-2 bg-amber-500/30 rounded-full"><span class="text-xl">🛒</span></button>
+      </div>
+
+      <div class="flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full mb-4 self-center">
+        <span class="text-xl">🪙</span>
+        <span id="map-coins" class="text-lg font-bold text-amber-300">0</span>
+      </div>
+
+      <div id="level-grid" class="flex-1 overflow-y-auto pb-4 space-y-6"></div>
+    </div>
+
+    <!-- SHOP SCREEN -->
+    <div id="shop-screen" class="screen flex-col p-4">
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
+        <h2 class="text-xl font-bold text-white">Shop</h2>
+        <div class="w-10"></div>
+      </div>
+
+      <div class="flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full mb-4 self-center">
+        <span class="text-xl">🪙</span>
+        <span id="shop-coins" class="text-lg font-bold text-amber-300">0</span>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-3 pb-4">
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-3">🎒 Your Inventory</h3>
+          <div id="inventory-display" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+          <h3 class="text-lg font-bold text-white mb-3">🛍️ Buy Boosts</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">💡</span>
+                <div>
+                  <p class="font-bold text-white">Hint</p>
+                  <p class="text-xs text-emerald-200">Shows correct bin</p>
+                </div>
+              </div>
+              <button onclick="buyBoost('hint')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
+                <span>50</span><span class="text-sm">🪙</span>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">🛡️</span>
+                <div>
+                  <p class="font-bold text-white">Shield</p>
+                  <p class="text-xs text-emerald-200">Blocks next penalty</p>
+                </div>
+              </div>
+              <button onclick="buyBoost('shield')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
+                <span>80</span><span class="text-sm">🪙</span>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">🌀</span>
+                <div>
+                  <p class="font-bold text-white">Vacuum</p>
+                  <p class="text-xs text-emerald-200">Auto-sorts 1 item</p>
+                </div>
+              </div>
+              <button onclick="buyBoost('vacuum')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
+                <span>120</span><span class="text-sm">🪙</span>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">❄️</span>
+                <div>
+                  <p class="font-bold text-white">Freeze</p>
+                  <p class="text-xs text-emerald-200">Stops timer 5s</p>
+                </div>
+              </div>
+              <button onclick="buyBoost('freeze')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
+                <span>100</span><span class="text-sm">🪙</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col">
+
+      <!-- Top HUD -->
+      <div class="bg-black/30 p-3 flex items-center justify-between backdrop-blur-sm">
+        <button onclick="pauseGame()" class="p-2 bg-white/20 rounded-full"><span class="text-lg">⏸️</span></button>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1">
+            <span class="text-lg">⭐</span>
+            <span id="game-score" class="font-bold text-white">0</span>
+          </div>
+          <div id="timer-display" class="flex items-center gap-1 hidden">
+            <span class="text-lg">⏱️</span>
+            <span id="game-timer" class="font-bold text-white">60</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full">
+          <span class="text-sm">🪙</span>
+          <span id="game-coins" class="text-sm font-bold text-amber-300">0</span>
+        </div>
+      </div>
+
+      <!-- Streak & Wave Info -->
+      <div class="flex justify-between items-center px-3 py-2 bg-black/20">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-white">Level</span>
+          <span id="level-display" class="font-bold text-amber-300">1</span>
+        </div>
+        <div id="streak-display" class="flex items-center gap-1 bg-orange-500/30 px-2 py-1 rounded-full hidden">
+          <span class="text-sm">🔥</span>
+          <span id="streak-count" class="text-sm font-bold text-orange-300">x1</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-white">Wave</span>
+          <span id="wave-display" class="font-bold text-cyan-300">1/1</span>
+        </div>
+      </div>
+
+      <!-- Contamination Bar -->
+      <div class="px-3 py-2 bg-black/20">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs text-white">☣️ Contamination</span>
+          <span id="contamination-percent" class="text-xs text-red-300">0%</span>
+        </div>
+        <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
+          <div id="contamination-bar" class="h-full bg-gradient-to-r from-yellow-500 to-red-500 contamination-bar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Boosts Bar -->
+      <div class="flex justify-center gap-2 px-3 py-2 bg-black/10">
+        <button id="boost-hint" onclick="useBoost('hint')" class="boost-btn flex flex-col items-center p-2 bg-purple-500/30 rounded-xl" disabled>
+          <span class="text-xl">💡</span>
+          <span class="text-xs text-white" id="hint-count">0</span>
+        </button>
+        <button id="boost-shield" onclick="useBoost('shield')" class="boost-btn flex flex-col items-center p-2 bg-blue-500/30 rounded-xl" disabled>
+          <span class="text-xl">🛡️</span>
+          <span class="text-xs text-white" id="shield-count">0</span>
+        </button>
+        <button id="boost-vacuum" onclick="useBoost('vacuum')" class="boost-btn flex flex-col items-center p-2 bg-green-500/30 rounded-xl" disabled>
+          <span class="text-xl">🌀</span>
+          <span class="text-xs text-white" id="vacuum-count">0</span>
+        </button>
+        <button id="boost-freeze" onclick="useBoost('freeze')" class="boost-btn flex flex-col items-center p-2 bg-cyan-500/30 rounded-xl" disabled>
+          <span class="text-xl">❄️</span>
+          <span class="text-xs text-white" id="freeze-count">0</span>
+        </button>
+
+        <div id="shield-active" class="hidden items-center px-2 bg-blue-500/50 rounded-lg"><span class="text-sm">🛡️ Active</span></div>
+      </div>
+
+      <!-- Bins + Tray -->
+      <div class="flex-1 flex flex-col justify-between p-3 min-h-0">
+        <div id="bins-container" class="grid grid-cols-4 gap-2 mb-3">
+          <div class="bin flex flex-col items-center p-2 bg-green-600 rounded-2xl shadow-lg" data-bin="biodegradable">
+            <span class="text-2xl mb-1">🥬</span>
+            <span class="text-xs text-white font-bold text-center leading-tight">Bio</span>
+          </div>
+          <div class="bin flex flex-col items-center p-2 bg-blue-600 rounded-2xl shadow-lg" data-bin="recyclable">
+            <span class="text-2xl mb-1">♻️</span>
+            <span class="text-xs text-white font-bold text-center leading-tight">Recycle</span>
+          </div>
+          <div class="bin flex flex-col items-center p-2 bg-gray-600 rounded-2xl shadow-lg" data-bin="residual">
+            <span class="text-2xl mb-1">🗑️</span>
+            <span class="text-xs text-white font-bold text-center leading-tight">Residual</span>
+          </div>
+          <div class="bin flex flex-col items-center p-2 bg-red-600 rounded-2xl shadow-lg" data-bin="hazardous">
+            <span class="text-2xl mb-1">☠️</span>
+            <span class="text-xs text-white font-bold text-center leading-tight">Hazard</span>
+          </div>
+        </div>
+
+        <div id="trash-tray" class="flex-1 bg-black/20 rounded-2xl p-3 overflow-hidden flex flex-wrap content-start gap-2 justify-center"></div>
+      </div>
+    </div>
+
+    <!-- PAUSE MODAL -->
+    <div id="pause-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-6 z-50">
+      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in">
+        <h2 class="text-2xl font-bold text-white mb-6">⏸️ Paused</h2>
+        <div class="space-y-3">
+          <button onclick="resumeGame()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl">▶️ Resume</button>
+          <button onclick="restartLevel()" class="w-full py-3 bg-amber-500 text-white font-bold rounded-xl">🔄 Restart</button>
+          <button onclick="quitToMap()" class="w-full py-3 bg-red-500 text-white font-bold rounded-xl">🚪 Quit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div id="result-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-6 z-50">
+      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in">
+        <div id="result-emoji" class="text-6xl mb-4">🎉</div>
+        <h2 id="result-title" class="text-2xl font-bold text-white mb-2">Level Complete!</h2>
+        <p id="result-message" class="text-emerald-200 mb-4">Great job!</p>
+
+        <div id="result-stars" class="flex justify-center gap-2 mb-4 text-4xl">
+          <span class="star empty">⭐</span>
+          <span class="star empty">⭐</span>
+          <span class="star empty">⭐</span>
+        </div>
+
+        <div class="flex justify-center gap-4 mb-6">
+          <div class="bg-black/20 px-4 py-2 rounded-xl">
+            <p class="text-xs text-emerald-300">Score</p>
+            <p id="result-score" class="text-xl font-bold text-white">0</p>
+          </div>
+          <div class="bg-black/20 px-4 py-2 rounded-xl">
+            <p class="text-xs text-emerald-300">Coins</p>
+            <p id="result-coins" class="text-xl font-bold text-amber-300">+0</p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <button id="next-level-btn" onclick="nextLevel()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl">➡️ Next Level</button>
+          <button onclick="restartLevel()" class="w-full py-3 bg-amber-500 text-white font-bold rounded-xl">🔄 Retry</button>
+          <button onclick="quitToMap()" class="w-full py-3 bg-white/20 text-white font-bold rounded-xl">🗺️ Map</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full hidden z-50">
+      <span id="toast-text">Message</span>
+    </div>
+
+    <!-- Sparkle Container -->
+    <div id="sparkles" class="fixed inset-0 pointer-events-none z-40"></div>
+  </div>
+
+  <script>
+    // =========================================================
+    // ✅ ACCURATE TRASH IMAGES (WHOLE IMPLEMENTATION)
+    // - Uses item.imageSrc if you provide one
+    // - If not provided, it automatically uses a correct Twemoji icon
+    // - If Twemoji fails, it falls back to the plain emoji
+    // =========================================================
+
+    // ========== TRASH DATABASE ==========
+    // NOTE: I removed the old Unsplash photo links because they can be inaccurate/random.
+    // You can still add your own accurate photos later by adding `imageSrc: 'your-url.png'` to any item.
+    const TRASH_DATABASE = {
+      biodegradable: [
+        { name: "Banana Peel", emoji: "🍌", imageSrc: "https://raw.githubusercontent.com/hinokunn1/ecorush/ec0c8c72e1d12e431fb310242a80ef14ae6a6ad4/1644DDD1-F665-42E5-A092-7589DCD7B356.webp" },
+        { name: "Leftover Rice", emoji: "🍚", imageSrc: "https://raw.githubusercontent.com/hinokunn1/ecorush/3b57c1736dc4563c5080464b5f594ee200a4faf1/img/1.png" },
+        { name: "Fish Bones", emoji: "🐟", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/2.png" },
+        { name: "Chicken Bones", emoji: "🍗", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/3.png" },
+        { name: "Mango Seed", emoji: "🥭", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/4.png" },
+        { name: "Coconut Husk", emoji: "🥥", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/5.png" },
+        { name: "Vegetable Peels", emoji: "🥕", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/6.png" },
+        { name: "Corn Cob", emoji: "🌽", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/7.png" },
+        { name: "Egg Shells", emoji: "🥚", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/8.png" },
+        { name: "Calamansi Peel", emoji: "🍋", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/9.png" },
+        { name: "Used Tea Leaves", emoji: "🍵", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/10.png" },
+        { name: "Coffee Grounds", emoji: "☕", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/11.png" },
+        { name: "Wilted Leaves", emoji: "🍂", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/12.png" },
+        { name: "Bread Leftover", emoji: "🍞", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/13.png" },
+        { name: "Fruit Peels", emoji: "🍊", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/14.png" },
+        { name: "Pineapple Crown", emoji: "🍍", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/15.png" },
+        { name: "Watermelon Rind", emoji: "🍉", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/16.png" },
+        { name: "Peanut Shells", emoji: "🥜", imageSrc: "https://github.com/hinokunn1/ecorush/blob/99b4ecd7ee3fc6558304cde93b19597d596d8209/17.png" }
+      ],
+      recyclable: [
+        { name: "Water Bottle", emoji: "🧴" },
+        { name: "Soft Drink Bottle", emoji: "🍾" },
+        { name: "Sardines Can", emoji: "🥫" },
+        { name: "Tuna Can", emoji: "🥫" },
+        { name: "Glass Bottle", emoji: "🍶" },
+        { name: "Aluminum Can", emoji: "🥤" },
+        { name: "Shopee Box", emoji: "📦" },
+        { name: "Lazada Box", emoji: "📦" },
+        { name: "Newspaper", emoji: "📰" },
+        { name: "Cardboard", emoji: "📋" },
+        { name: "Paper Bag", emoji: "🛍️" },
+        { name: "Clean Plastic Container", emoji: "🫙" },
+        { name: "Detergent Bottle", emoji: "🧴", needsCleaning: true },
+        { name: "Glass Jar", emoji: "🫙" },
+        { name: "Metal Lid", emoji: "⭕" },
+        { name: "Milk Carton", emoji: "🥛", needsCleaning: true },
+        { name: "Magazine", emoji: "📖" },
+        { name: "Office Paper", emoji: "📄" }
+      ],
+      residual: [
+        { name: "Used Diaper", emoji: "👶" },
+        { name: "Candy Wrapper", emoji: "🍬" },
+        { name: "Chip Bag", emoji: "🥔" },
+        { name: "Styrofoam Plate", emoji: "🍽️" },
+        { name: "Plastic Straw", emoji: "🥤" },
+        { name: "Dirty Plastic Bag", emoji: "🛍️" },
+        { name: "Broken Tsinelas", emoji: "🩴" },
+        { name: "Old Sponge", emoji: "🧽" },
+        { name: "Used Tissue", emoji: "🧻" },
+        { name: "Old Toothbrush", emoji: "🪥" },
+        { name: "Broken Ceramic", emoji: "🏺" },
+        { name: "Sachet Wrapper", emoji: "📦" },
+        { name: "Used Face Mask", emoji: "😷" },
+        { name: "Wet Wipes", emoji: "🧴" },
+        { name: "Used Tape", emoji: "📎" },
+        { name: "Dirty Paper Cup", emoji: "🥤" },
+        { name: "Cigarette Butt", emoji: "🚬" },
+        { name: "Rubber Band", emoji: "⭕" }
+      ],
+      hazardous: [
+        { name: "AA Battery", emoji: "🔋" },
+        { name: "Phone Battery", emoji: "📱" },
+        { name: "Light Bulb", emoji: "💡" },
+        { name: "Mosquito Spray", emoji: "🦟" },
+        { name: "Bleach Bottle", emoji: "🧴" },
+        { name: "Pesticide Bottle", emoji: "☠️" },
+        { name: "Medicine Blister", emoji: "💊" },
+        { name: "Expired Medicine", emoji: "💊" },
+        { name: "Nail Polish", emoji: "💅" },
+        { name: "Aerosol Can", emoji: "🧴" },
+        { name: "Old Charger", emoji: "🔌" },
+        { name: "Broken Thermometer", emoji: "🌡️" },
+        { name: "Ink Cartridge", emoji: "🖨️" },
+        { name: "Paint Can", emoji: "🎨" },
+        { name: "Motor Oil", emoji: "🛢️" },
+        { name: "Fluorescent Tube", emoji: "💡" },
+        { name: "Car Battery", emoji: "🚗" },
+        { name: "Broken Phone", emoji: "📱" }
+      ]
+    };
+
+    // Decoy items (confusing items that look similar)
+    const DECOY_ITEMS = [
+      { name: "Dirty Water Bottle", emoji: "🧴", category: "residual", looksLike: "recyclable" },
+      { name: "Clean Paper Cup", emoji: "🥤", category: "recyclable", looksLike: "residual", needsCleaning: true },
+      { name: "Greasy Pizza Box", emoji: "📦", category: "residual", looksLike: "recyclable" },
+      { name: "Clean Styrofoam", emoji: "📦", category: "residual", looksLike: "recyclable" }
+    ];
+
+    // ========== LEVEL CONFIGURATION ==========
+    function getLevelConfig(level) {
+      let trashCount = 5 + Math.floor(level * 0.8);
+      let hazardChance = Math.min(0.1 + level * 0.01, 0.4);
+      let contaminationPenalty = 10 + Math.floor(level * 0.5);
+      let timer = 0;
+      let timerType = 'none';
+      let waves = 1;
+      let useDecoys = level >= 6;
+
+      if (level >= 7 && level <= 9) {
+        timer = 60 + (level - 7) * 10;
+        timerType = 'soft';
+      } else if (level >= 10) {
+        timer = Math.max(40, 90 - (level - 10) * 2);
+        timerType = 'hard';
+      }
+
+      if (level >= 8 && level <= 15) waves = 2;
+      else if (level >= 16) waves = 3;
+
+      const trashPerWave = Math.ceil(trashCount / waves);
+
+      return {
+        level,
+        trashPerWave,
+        totalTrash: trashPerWave * waves,
+        hazardChance,
+        contaminationPenalty,
+        timer,
+        timerType,
+        waves,
+        useDecoys
+      };
+    }
+
+    // ========== GAME STATE ==========
+    let gameState = {
+      coins: 0,
+      levelStars: {},
+      highestUnlocked: 1,
+      boosts: { hint: 0, shield: 0, vacuum: 0, freeze: 0 }
+    };
+
+    let currentGame = {
+      level: 1,
+      config: null,
+      score: 0,
+      streak: 0,
+      contamination: 0,
+      currentWave: 1,
+      trashItems: [],
+      timer: 0,
+      timerInterval: null,
+      isPaused: false,
+      isFreezed: false,
+      shieldActive: false,
+      coinsEarned: 0
+    };
+
+    // ========== PERSISTENCE ==========
+    function saveGame() {
+      localStorage.setItem('ecoRushSave', JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('ecoRushSave');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        gameState = { ...gameState, ...parsed };
+      }
+      updateAllCoinDisplays();
+    }
+
+    // ========== UI HELPERS ==========
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+
+      if (screenId === 'map-screen') renderLevelMap();
+      else if (screenId === 'shop-screen') renderShop();
+
+      updateAllCoinDisplays();
+    }
+
+    function updateAllCoinDisplays() {
+      document.getElementById('home-coins').textContent = gameState.coins;
+      document.getElementById('map-coins').textContent = gameState.coins;
+      document.getElementById('shop-coins').textContent = gameState.coins;
+      document.getElementById('game-coins').textContent = gameState.coins;
+    }
+
+    function showToast(message, duration = 2000) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-text').textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('toast');
+
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('toast');
+      }, duration);
+    }
+
+    function createSparkle(x, y, color = '#22c55e') {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle absolute';
+      sparkle.style.left = x + 'px';
+      sparkle.style.top = y + 'px';
+      sparkle.innerHTML = `<svg width="40" height="40" viewBox="0 0 40 40">
+        <path d="M20 0 L23 17 L40 20 L23 23 L20 40 L17 23 L0 20 L17 17 Z" fill="${color}"/>
+      </svg>`;
+      document.getElementById('sparkles').appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 600);
+    }
+
+    // ========== LEVEL MAP ==========
+    function renderLevelMap() {
+      const grid = document.getElementById('level-grid');
+      grid.innerHTML = '';
+
+      const difficulties = [
+        { name: '🟢 Easy', range: [1, 5], color: 'from-green-500 to-emerald-600' },
+        { name: '🟡 Normal', range: [6, 15], color: 'from-yellow-500 to-amber-600' },
+        { name: '🔴 Hard', range: [16, 25], color: 'from-red-500 to-orange-600' },
+        { name: '🟣 Extreme', range: [26, 30], color: 'from-purple-600 to-pink-600' }
+      ];
+
+      difficulties.forEach(difficulty => {
+        const section = document.createElement('div');
+        section.className = 'px-4';
+
+        const title = document.createElement('h3');
+        title.className = 'text-lg font-bold text-white mb-3 ml-2';
+        title.textContent = difficulty.name;
+        section.appendChild(title);
+
+        const levelGrid = document.createElement('div');
+        levelGrid.className = 'grid grid-cols-5 gap-2';
+
+        for (let i = difficulty.range[0]; i <= difficulty.range[1]; i++) {
+          const stars = gameState.levelStars[i] || 0;
+          const isUnlocked = i <= gameState.highestUnlocked;
+
+          const node = document.createElement('button');
+          node.className = `level-node aspect-square rounded-xl flex flex-col items-center justify-center text-sm ${
+            isUnlocked ? `bg-gradient-to-br ${difficulty.color}` : 'bg-gray-600 locked'
+          }`;
+
+          if (isUnlocked) node.onclick = () => startLevel(i);
+
+          node.innerHTML = `
+            <span class="font-bold text-white">${i}</span>
+            <div class="flex gap-0.5 mt-0.5">
+              ${[1, 2, 3].map(s => `<span class="text-xs ${s <= stars ? 'text-amber-300' : 'text-gray-400'}">⭐</span>`).join('')}
+            </div>
+          `;
+
+          levelGrid.appendChild(node);
+        }
+
+        section.appendChild(levelGrid);
+        grid.appendChild(section);
+      });
+    }
+
+    // ========== SHOP ==========
+    function renderShop() {
+      const inventory = document.getElementById('inventory-display');
+      inventory.innerHTML = `
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">💡</span><span class="text-white font-bold">${gameState.boosts.hint}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">🛡️</span><span class="text-white font-bold">${gameState.boosts.shield}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">🌀</span><span class="text-white font-bold">${gameState.boosts.vacuum}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">❄️</span><span class="text-white font-bold">${gameState.boosts.freeze}</span></div>
+      `;
+    }
+
+    function buyBoost(type) {
+      const costs = { hint: 50, shield: 80, vacuum: 120, freeze: 100 };
+      const cost = costs[type];
+
+      if (gameState.coins >= cost) {
+        gameState.coins -= cost;
+        gameState.boosts[type]++;
+        saveGame();
+        updateAllCoinDisplays();
+        renderShop();
+        showToast(`Purchased ${type}! 🎉`);
+      } else {
+        showToast(`Not enough coins! Need ${cost} 🪙`);
+      }
+    }
+
+    // ========== IMAGE HELPERS (ACCURATE ICONS) ==========
+    function getEmojiImageSrc(emoji) {
+      const codePoints = Array.from(emoji)
+        .map(char => char.codePointAt(0).toString(16))
+        .filter(code => code !== 'fe0f');
+      return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${codePoints.join('-')}.png`;
+    }
+
+    // Ensures every item has a valid imageSrc:
+    // - if you set a custom imageSrc, it will use that
+    // - otherwise it uses Twemoji (accurate + consistent)
+    function ensureItemImage(item) {
+      if (!item.imageSrc) item.imageSrc = getEmojiImageSrc(item.emoji);
+      return item;
+    }
+
+    // ========== GAME LOGIC ==========
+    function startLevel(level) {
+      currentGame = {
+        level,
+        config: getLevelConfig(level),
+        score: 0,
+        streak: 0,
+        contamination: 0,
+        currentWave: 1,
+        trashItems: [],
+        timer: 0,
+        timerInterval: null,
+        isPaused: false,
+        isFreezed: false,
+        shieldActive: false,
+        coinsEarned: 0
+      };
+
+      showScreen('game-screen');
+      updateGameUI();
+      updateBoostButtons();
+      spawnWave();
+
+      if (currentGame.config.timerType !== 'none') {
+        currentGame.timer = currentGame.config.timer;
+        document.getElementById('timer-display').classList.remove('hidden');
+        document.getElementById('game-timer').textContent = currentGame.timer;
+        startTimer();
+      } else {
+        document.getElementById('timer-display').classList.add('hidden');
+      }
+    }
+
+    function startTimer() {
+      if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
+
+      currentGame.timerInterval = setInterval(() => {
+        if (currentGame.isPaused || currentGame.isFreezed) return;
+
+        currentGame.timer--;
+        const timerEl = document.getElementById('game-timer');
+        timerEl.textContent = currentGame.timer;
+
+        if (currentGame.timer <= 5 && currentGame.config.timerType !== 'none') {
+          timerEl.classList.add('timer-critical');
+        } else {
+          timerEl.classList.remove('timer-critical');
+        }
+
+        if (currentGame.timer <= 0 && currentGame.config.timerType === 'hard') {
+          endGame(false, 'Time ran out! ⏰');
+        }
+      }, 1000);
+    }
+
+    function spawnWave() {
+      const tray = document.getElementById('trash-tray');
+      tray.innerHTML = '';
+      currentGame.trashItems = [];
+
+      const config = currentGame.config;
+      const items = [];
+
+      for (let i = 0; i < config.trashPerWave; i++) {
+        let item;
+
+        if (Math.random() < config.hazardChance) {
+          item = getRandomItem('hazardous');
+        } else if (config.useDecoys && Math.random() < 0.15) {
+          item = { ...DECOY_ITEMS[Math.floor(Math.random() * DECOY_ITEMS.length)] };
+          item = ensureItemImage(item);
+        } else {
+          const categories = ['biodegradable', 'recyclable', 'residual'];
+          const cat = categories[Math.floor(Math.random() * categories.length)];
+          item = getRandomItem(cat);
+        }
+
+        items.push({
+          ...item,
+          id: `trash-${Date.now()}-${i}`,
+          isCleaned: !item.needsCleaning
+        });
+      }
+
+      currentGame.trashItems = items;
+
+      items.forEach((item, idx) => {
+        setTimeout(() => {
+          const card = createTrashCard(item);
+          tray.appendChild(card);
+        }, idx * 100);
+      });
+
+      updateGameUI();
+    }
+
+    function getRandomItem(category) {
+      const items = TRASH_DATABASE[category];
+      const item = { ...items[Math.floor(Math.random() * items.length)], category };
+      return ensureItemImage(item);
+    }
+
+    // ========== TRASH CARD (NOW USES ACCURATE IMAGE) ==========
+    function createTrashCard(item) {
+      const card = document.createElement('div');
+      card.className = 'trash-card bg-white rounded-xl p-2 shadow-lg cursor-grab flex flex-col items-center pop-in';
+      card.style.width = '70px';
+      card.dataset.id = item.id;
+      card.dataset.category = item.category;
+
+      const needsClean = item.needsCleaning && !item.isCleaned;
+
+      const imgDiv = document.createElement('div');
+      imgDiv.className = 'relative w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg mb-1 overflow-hidden';
+
+      const img = document.createElement('img');
+      // Prefer item.imageSrc (custom). If absent, ensureItemImage() already filled Twemoji.
+      img.src = item.imageSrc;
+      img.alt = item.name;
+      img.className = 'w-10 h-10 object-contain'; // consistent "game icon" style
+      img.loading = 'lazy';
+
+      img.onerror = function () {
+        img.style.display = 'none';
+        const fallback = document.createElement('span');
+        fallback.textContent = item.emoji;
+        fallback.className = 'text-3xl';
+        imgDiv.appendChild(fallback);
+      };
+
+      imgDiv.appendChild(img);
+
+      if (needsClean) {
+        const overlay = document.createElement('div');
+        overlay.className = 'clean-overlay absolute inset-0 rounded-lg flex items-center justify-center';
+        overlay.innerHTML = '<span class="text-white text-xs font-bold">TAP</span>';
+        imgDiv.appendChild(overlay);
+      }
+
+      card.appendChild(imgDiv);
+
+      const name = document.createElement('span');
+      name.className = 'text-xs text-gray-700 text-center leading-tight font-medium';
+      name.textContent = item.name;
+      card.appendChild(name);
+
+      if (needsClean) {
+        card.onclick = (e) => {
+          e.stopPropagation();
+          cleanItem(item.id);
+        };
+      }
+
+      setupDrag(card, item);
+      return card;
+    }
+
+    function cleanItem(itemId) {
+      const item = currentGame.trashItems.find(i => i.id === itemId);
+      if (item && !item.isCleaned) {
+        item.isCleaned = true;
+
+        const card = document.querySelector(`[data-id="${itemId}"]`);
+        const overlay = card?.querySelector('.clean-overlay');
+        if (overlay) {
+          overlay.remove();
+          showToast('✨ Cleaned!');
+          const r = card.getBoundingClientRect();
+          createSparkle(r.left + 35, r.top + 35, '#3b82f6');
+        }
+
+        card.onclick = null;
+        const itemData = currentGame.trashItems.find(i => i.id === itemId);
+        setupDrag(card, itemData);
+      }
+    }
+
+    function setupDrag(card, item) {
+      let isDragging = false;
+      let offsetX, offsetY;
+      let originalParent;
+
+      const onStart = (e) => {
+        if (item.needsCleaning && !item.isCleaned) return;
+
+        e.preventDefault();
+        isDragging = true;
+        card.classList.add('dragging');
+
+        const touch = e.touches ? e.touches[0] : e;
+        const rect = card.getBoundingClientRect();
+
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+
+        originalParent = card.parentElement;
+
+        card.style.position = 'fixed';
+        card.style.left = rect.left + 'px';
+        card.style.top = rect.top + 'px';
+        card.style.zIndex = '1000';
+        document.body.appendChild(card);
+      };
+
+      const onMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+
+        const touch = e.touches ? e.touches[0] : e;
+        card.style.left = (touch.clientX - offsetX) + 'px';
+        card.style.top = (touch.clientY - offsetY) + 'px';
+
+        const bins = document.querySelectorAll('.bin');
+        bins.forEach(bin => {
+          const binRect = bin.getBoundingClientRect();
+          const cx = touch.clientX, cy = touch.clientY;
+
+          if (cx >= binRect.left && cx <= binRect.right && cy >= binRect.top && cy <= binRect.bottom) {
+            bin.classList.add('highlight');
+          } else {
+            bin.classList.remove('highlight');
+          }
+        });
+      };
+
+      const onEnd = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.classList.remove('dragging');
+
+        const touch = e.changedTouches ? e.changedTouches[0] : e;
+
+        const bins = document.querySelectorAll('.bin');
+        let droppedBin = null;
+
+        bins.forEach(bin => {
+          bin.classList.remove('highlight');
+          const binRect = bin.getBoundingClientRect();
+          if (touch.clientX >= binRect.left && touch.clientX <= binRect.right &&
+              touch.clientY >= binRect.top && touch.clientY <= binRect.bottom) {
+            droppedBin = bin;
+          }
+        });
+
+        if (droppedBin) {
+          const binCategory = droppedBin.dataset.bin;
+          handleDrop(item, binCategory, card, droppedBin);
+        } else {
+          returnCardToTray(card, originalParent);
+        }
+      };
+
+      // Avoid stacking duplicate listeners if cleanItem re-calls setupDrag
+      card.onmousedown = null;
+      card.ontouchstart = null;
+
+      card.addEventListener('touchstart', onStart, { passive: false });
+      card.addEventListener('touchmove', onMove, { passive: false });
+      card.addEventListener('touchend', onEnd, { passive: false });
+
+      card.addEventListener('mousedown', onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+    }
+
+    function handleDrop(item, binCategory, card, bin) {
+      const isCorrect = item.category === binCategory;
+
+      if (item.needsCleaning && !item.isCleaned) {
+        showToast('Clean this first! 👆');
+        returnCardToTray(card, document.getElementById('trash-tray'));
+        return;
+      }
+
+      if (isCorrect) {
+        const basePoints = 10;
+        const streakMultiplier = Math.min(currentGame.streak + 1, 5);
+        const points = basePoints * streakMultiplier;
+
+        currentGame.score += points;
+        currentGame.streak++;
+        currentGame.coinsEarned += Math.floor(points / 5);
+
+        const r = card.getBoundingClientRect();
+        createSparkle(r.left + 35, r.top + 35);
+        card.remove();
+
+        currentGame.trashItems = currentGame.trashItems.filter(i => i.id !== item.id);
+
+        updateGameUI();
+
+        if (currentGame.trashItems.length === 0) {
+          if (currentGame.currentWave < currentGame.config.waves) {
+            currentGame.currentWave++;
+            showToast(`Wave ${currentGame.currentWave}! 🌊`);
+            setTimeout(spawnWave, 1000);
+          } else {
+            endGame(true);
+          }
+        }
+      } else {
+        if (currentGame.shieldActive) {
+          currentGame.shieldActive = false;
+          document.getElementById('shield-active').classList.add('hidden');
+          showToast('Shield blocked penalty! 🛡️');
+        } else {
+          currentGame.contamination += currentGame.config.contaminationPenalty;
+          if (currentGame.contamination >= 100) {
+            endGame(false, 'Too much contamination! ☣️');
+            return;
+          }
+        }
+
+        currentGame.streak = 0;
+
+        bin.classList.add('wrong');
+        setTimeout(() => bin.classList.remove('wrong'), 500);
+
+        returnCardToTray(card, document.getElementById('trash-tray'));
+        updateGameUI();
+      }
+    }
+
+    function returnCardToTray(card, tray) {
+      card.style.position = '';
+      card.style.left = '';
+      card.style.top = '';
+      card.style.zIndex = '';
+      card.style.transition = '';
+      card.style.transform = '';
+      tray.appendChild(card);
+    }
+
+    function updateGameUI() {
+      document.getElementById('game-score').textContent = currentGame.score;
+      document.getElementById('level-display').textContent = currentGame.level;
+      document.getElementById('wave-display').textContent = `${currentGame.currentWave}/${currentGame.config.waves}`;
+
+      const streakDisplay = document.getElementById('streak-display');
+      if (currentGame.streak > 0) {
+        streakDisplay.classList.remove('hidden');
+        document.getElementById('streak-count').textContent = `x${Math.min(currentGame.streak, 5)}`;
+      } else {
+        streakDisplay.classList.add('hidden');
+      }
+
+      document.getElementById('contamination-bar').style.width = `${currentGame.contamination}%`;
+      document.getElementById('contamination-percent').textContent = `${Math.round(currentGame.contamination)}%`;
+    }
+
+    function updateBoostButtons() {
+      const boosts = ['hint', 'shield', 'vacuum', 'freeze'];
+      boosts.forEach(type => {
+        const btn = document.getElementById(`boost-${type}`);
+        const count = document.getElementById(`${type}-count`);
+        count.textContent = gameState.boosts[type];
+        btn.disabled = gameState.boosts[type] <= 0;
+      });
+    }
+
+    // ========== BOOSTS ==========
+    function useBoost(type) {
+      if (gameState.boosts[type] <= 0) return;
+
+      gameState.boosts[type]--;
+      saveGame();
+      updateBoostButtons();
+
+      switch (type) {
+        case 'hint': useHint(); break;
+        case 'shield':
+          currentGame.shieldActive = true;
+          document.getElementById('shield-active').classList.remove('hidden');
+          document.getElementById('shield-active').classList.add('flex');
+          showToast('Shield activated! 🛡️');
+          break;
+        case 'vacuum': useVacuum(); break;
+        case 'freeze': useFreeze(); break;
+      }
+    }
+
+    function useHint() {
+      if (currentGame.trashItems.length === 0) return;
+
+      const item = currentGame.trashItems[0];
+      const card = document.querySelector(`[data-id="${item.id}"]`);
+      const bin = document.querySelector(`[data-bin="${item.category}"]`);
+
+      if (card && bin) {
+        bin.classList.add('pulse-glow');
+        card.style.outline = '3px solid #22c55e';
+
+        setTimeout(() => {
+          bin.classList.remove('pulse-glow');
+          if (card) card.style.outline = '';
+        }, 3000);
+
+        showToast(`Hint: ${item.name} → ${item.category}! 💡`);
+      }
+    }
+
+    function useVacuum() {
+      if (currentGame.trashItems.length === 0) return;
+
+      const item = currentGame.trashItems[Math.floor(Math.random() * currentGame.trashItems.length)];
+      const card = document.querySelector(`[data-id="${item.id}"]`);
+      const bin = document.querySelector(`[data-bin="${item.category}"]`);
+
+      if (card && bin) {
+        const cardRect = card.getBoundingClientRect();
+        const binRect = bin.getBoundingClientRect();
+
+        card.style.position = 'fixed';
+        card.style.left = cardRect.left + 'px';
+        card.style.top = cardRect.top + 'px';
+        card.style.zIndex = '1000';
+        card.style.transition = 'all 0.5s ease';
+        document.body.appendChild(card);
+
+        setTimeout(() => {
+          card.style.left = (binRect.left + binRect.width/2 - 35) + 'px';
+          card.style.top = binRect.top + 'px';
+          card.style.transform = 'scale(0)';
+        }, 50);
+
+        setTimeout(() => {
+          card.remove();
+          currentGame.trashItems = currentGame.trashItems.filter(i => i.id !== item.id);
+          currentGame.score += 10;
+          updateGameUI();
+
+          createSparkle(binRect.left + binRect.width/2, binRect.top + binRect.height/2);
+
+          if (currentGame.trashItems.length === 0) {
+            if (currentGame.currentWave < currentGame.config.waves) {
+              currentGame.currentWave++;
+              setTimeout(spawnWave, 1000);
+            } else {
+              endGame(true);
+            }
+          }
+        }, 600);
+
+        showToast('Vacuum! 🌀');
+      }
+    }
+
+    function useFreeze() {
+      currentGame.isFreezed = true;
+      showToast('Time frozen! ❄️');
+
+      document.getElementById('game-screen').style.boxShadow = 'inset 0 0 100px rgba(59, 130, 246, 0.5)';
+
+      setTimeout(() => {
+        currentGame.isFreezed = false;
+        document.getElementById('game-screen').style.boxShadow = '';
+        showToast('Time resumed! ⏱️');
+      }, 5000);
+    }
+
+    // ========== GAME END ==========
+    function endGame(won, message = '') {
+      if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
+
+      const modal = document.getElementById('result-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      if (won) {
+        let stars = 1;
+        if (currentGame.contamination < 30) stars++;
+        if (currentGame.streak >= 3 || currentGame.score >= currentGame.config.totalTrash * 15) stars++;
+
+        if (currentGame.config.timerType === 'soft' && currentGame.timer > 0) {
+          currentGame.coinsEarned += Math.floor(currentGame.timer / 2);
+        }
+
+        gameState.coins += currentGame.coinsEarned;
+        gameState.levelStars[currentGame.level] = Math.max(gameState.levelStars[currentGame.level] || 0, stars);
+        gameState.highestUnlocked = Math.max(gameState.highestUnlocked, currentGame.level + 1);
+
+        document.getElementById('result-emoji').textContent = stars === 3 ? '🏆' : stars === 2 ? '🎉' : '✅';
+        document.getElementById('result-title').textContent = 'Level Complete!';
+        document.getElementById('result-message').textContent = stars === 3 ? 'Perfect!' : stars === 2 ? 'Great job!' : 'Keep improving!';
+
+        const starEls = document.querySelectorAll('#result-stars .star');
+        starEls.forEach((el, i) => {
+          setTimeout(() => {
+            if (i < stars) {
+              el.classList.remove('empty');
+              el.classList.add('earned');
+            } else {
+              el.classList.add('empty');
+              el.classList.remove('earned');
+            }
+          }, i * 300);
+        });
+
+        document.getElementById('next-level-btn').classList.remove('hidden');
+      } else {
+        document.getElementById('result-emoji').textContent = '😢';
+        document.getElementById('result-title').textContent = 'Level Failed';
+        document.getElementById('result-message').textContent = message || 'Try again!';
+
+        document.querySelectorAll('#result-stars .star').forEach(el => {
+          el.classList.add('empty');
+          el.classList.remove('earned');
+        });
+
+        document.getElementById('next-level-btn').classList.add('hidden');
+      }
+
+      document.getElementById('result-score').textContent = currentGame.score;
+      document.getElementById('result-coins').textContent = `+${currentGame.coinsEarned}`;
+
+      saveGame();
+      updateAllCoinDisplays();
+    }
+
+    function nextLevel() {
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('result-modal').classList.remove('flex');
+
+      if (currentGame.level < 30) startLevel(currentGame.level + 1);
+      else { showToast('You completed all levels! 🎉'); showScreen('map-screen'); }
+    }
+
+    function restartLevel() {
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('result-modal').classList.remove('flex');
+      document.getElementById('pause-modal').classList.add('hidden');
+      document.getElementById('pause-modal').classList.remove('flex');
+
+      startLevel(currentGame.level);
+    }
+
+    function pauseGame() {
+      currentGame.isPaused = true;
+      document.getElementById('pause-modal').classList.remove('hidden');
+      document.getElementById('pause-modal').classList.add('flex');
+    }
+
+    function resumeGame() {
+      currentGame.isPaused = false;
+      document.getElementById('pause-modal').classList.add('hidden');
+      document.getElementById('pause-modal').classList.remove('flex');
+    }
+
+    function quitToMap() {
+      if (currentGame.timerInterval) clearInterval(currentGame.timerInterval);
+
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('result-modal').classList.remove('flex');
+      document.getElementById('pause-modal').classList.add('hidden');
+      document.getElementById('pause-modal').classList.remove('flex');
+
+      showScreen('map-screen');
+    }
+
+    // ========== ELEMENT SDK ==========
+    const defaultConfig = { game_title: 'EcoRush' };
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const titleEl = document.getElementById('game-title');
+          if (titleEl) titleEl.textContent = config.game_title || defaultConfig.game_title;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['game_title', config.game_title || defaultConfig.game_title]
+        ])
+      });
+    }
+
+    // ========== INIT ==========
+    loadGame();
+
+    if (gameState.coins === 0 && Object.keys(gameState.levelStars).length === 0) {
+      gameState.coins = 100;
+      gameState.boosts.hint = 2;
+      gameState.boosts.shield = 1;
+      saveGame();
+    }
+
+    updateAllCoinDisplays();
+  </script>
+</body>
+</html>
