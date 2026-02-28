@@ -29,15 +29,15 @@
     .game-font { font-family: 'Fredoka', sans-serif; }
 
     /* BACKGROUND IMAGES (LOCAL REPO PATHS) */
-    .bg-home    { background: url("background-ui/home.webp") center/cover no-repeat; }
-    .bg-map     { background: url("background-ui/map.webp") center/cover no-repeat; }
-    .bg-tutorial{ background: url("background-ui/tutorial.webp") center/cover no-repeat; }
-    .bg-shop    { background: url("background-ui/shop.webp") center/cover no-repeat; }
+    .bg-home    { background: url("background-ui/home.png") center/cover no-repeat; }
+    .bg-map     { background: url("background-ui/map.png") center/cover no-repeat; }
+    .bg-tutorial{ background: url("background-ui/tutorial.png") center/cover no-repeat; }
+    .bg-shop    { background: url("background-ui/shop.png") center/cover no-repeat; }
 
-    .bg-game-easy    { background: url("background-ui/game-easy.webp") center/cover no-repeat; }
-    .bg-game-normal  { background: url("background-ui/game-normal.webp") center/cover no-repeat; }
-    .bg-game-hard    { background: url("background-ui/game-hard.webp") center/cover no-repeat; }
-    .bg-game-extreme { background: url("background-ui/game-extreme.webp") center/cover no-repeat; }
+    .bg-game-easy    { background: url("background-ui/game-easy.png") center/cover no-repeat; }
+    .bg-game-normal  { background: url("background-ui/game-normal.png") center/cover no-repeat; }
+    .bg-game-hard    { background: url("background-ui/game-hard.png") center/cover no-repeat; }
+    .bg-game-extreme { background: url("background-ui/game-extreme.png") center/cover no-repeat; }
 
     /* overlay for readability */
     .screen::before{
@@ -52,7 +52,7 @@
 
     /* title background */
     .title-bg{
-      background: url("background-ui/title.webp") center/cover no-repeat;
+      background: url("background-ui/title.png") center/cover no-repeat;
       padding: 14px 18px;
       border-radius: 24px;
       border: 2px solid rgba(255,255,255,.18);
@@ -553,7 +553,7 @@
     }
 
     function getTrashIconSrc(item) {
-      return `${TRASH_ICON_FOLDER}/${slugify(item.name)}.webp`;
+      return `${TRASH_ICON_FOLDER}/${slugify(item.name)}.png`;
     }
 
     function getEmojiImageSrc(emoji) {
