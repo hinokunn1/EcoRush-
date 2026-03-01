@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>EcoRush: Barangay Cleanup Challenge</title>
+  <title>EcoRush</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 
   <style>
     * {
@@ -31,7 +32,6 @@
     /* BACKGROUND IMAGES (LOCAL REPO PATHS) */
     .bg-home    { background: url("background-ui/home.png") center/cover no-repeat; }
     .bg-map     { background: url("background-ui/map.png") center/cover no-repeat; }
-    .bg-tutorial{ background: url("background-ui/tutorial.png") center/cover no-repeat; }
     .bg-shop    { background: url("background-ui/shop.png") center/cover no-repeat; }
 
     .bg-game-easy    { background: url("background-ui/game-easy.png") center/cover no-repeat; }
@@ -50,15 +50,168 @@
     }
     .screen > *{ position:relative; z-index:1; }
 
-    /* title background (kept, not required now) */
-    .title-bg{
-      background: url("background-ui/title.png") center/cover no-repeat;
-      padding: 20px 30px;
-      border-radius: 30px;
-      border: 2px solid rgba(255,255,255,.18);
-      box-shadow: 0 18px 40px rgba(0,0,0,.0);
-      display:inline-block;
-      backdrop-filter: blur(0px);
+    /* =========================
+       CARTOONY BUTTON SYSTEM
+       (inspired by your image)
+       ========================= */
+    :root{
+      --btn-orange-1:#ffc44d;
+      --btn-orange-2:#ff9b2f;
+      --btn-orange-3:#ff7a1a;
+
+      --btn-green-1:#69f07a;
+      --btn-green-2:#2edb69;
+      --btn-green-3:#12b85a;
+
+      --btn-red-1:#ff7a7a;
+      --btn-red-2:#ff4f5b;
+      --btn-red-3:#e83b45;
+
+      --btn-blue-1:#7ad6ff;
+      --btn-blue-2:#39b7ff;
+      --btn-blue-3:#0e9ce6;
+
+      --btn-ink:#2b2b2b;
+      --btn-cream:#fff3d2;
+    }
+
+    .cart-btn{
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      color: #2a1b00;
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
+      border: 2px solid rgba(0,0,0,.18);
+      box-shadow:
+        0 10px 0 rgba(0,0,0,.22),
+        0 18px 28px rgba(0,0,0,.35);
+      position: relative;
+      overflow: hidden;
+      transform: translateY(0);
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    }
+    .cart-btn::before{
+      content:"";
+      position:absolute;
+      inset: 3px 3px auto 3px;
+      height: 46%;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+      pointer-events:none;
+      opacity: .9;
+    }
+    .cart-btn:active{
+      transform: translateY(6px);
+      filter: brightness(.98) saturate(1.02);
+      box-shadow:
+        0 4px 0 rgba(0,0,0,.22),
+        0 10px 18px rgba(0,0,0,.28);
+    }
+    .cart-btn .row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .badge{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.25);
+      border: 2px solid rgba(0,0,0,.14);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-label{
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .btn-green{ background: linear-gradient(180deg, var(--btn-green-1), var(--btn-green-2) 55%, var(--btn-green-3)); }
+    .btn-orange{ background: linear-gradient(180deg, var(--btn-orange-1), var(--btn-orange-2) 55%, var(--btn-orange-3)); }
+    .btn-red{ background: linear-gradient(180deg, var(--btn-red-1), var(--btn-red-2) 55%, var(--btn-red-3)); }
+    .btn-blue{ background: linear-gradient(180deg, var(--btn-blue-1), var(--btn-blue-2) 55%, var(--btn-blue-3)); }
+
+    .icon-btn{
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 2px solid rgba(0,0,0,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.12));
+      box-shadow:
+        0 8px 0 rgba(0,0,0,.22),
+        0 16px 24px rgba(0,0,0,.32);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      overflow:hidden;
+      position:relative;
+    }
+    .icon-btn::before{
+      content:"";
+      position:absolute;
+      inset: 3px 3px auto 3px;
+      height: 46%;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+      pointer-events:none;
+      opacity: .9;
+    }
+    .icon-btn:active{
+      transform: translateY(5px);
+      box-shadow:
+        0 3px 0 rgba(0,0,0,.22),
+        0 10px 16px rgba(0,0,0,.26);
+      filter: brightness(.99);
+    }
+
+    .svg{
+      width: 22px;
+      height: 22px;
+      stroke: #1f1f1f;
+      stroke-width: 2.6;
+      fill: none;
+      position:relative;
+      z-index:1;
+    }
+    .svg-fill{
+      fill:#1f1f1f;
+      stroke:none;
+    }
+
+    /* HOME title float */
+    @keyframes homeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .home-title-wrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin-bottom: 1.1rem;
+      animation: homeFloat 3s ease-in-out infinite;
+    }
+    .home-title-img{
+      width: min(340px, 84vw);
+      height: auto;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
+      user-select:none;
+      pointer-events:none;
+    }
+
+    /* HUD pills */
+    .pill{
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,.18);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(10px);
+      box-shadow:
+        0 8px 0 rgba(0,0,0,.20),
+        0 16px 24px rgba(0,0,0,.30);
     }
 
     /* ANIMATIONS */
@@ -112,8 +265,8 @@
     /* UTILITY CLASSES */
     .bin { transition: all 0.2s ease; position: relative; overflow: hidden; }
     .bin.highlight {
-      transform: scale(1.12);
-      box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 20px rgba(255,255,255,0.3);
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(255,255,255,0.6), inset 0 0 18px rgba(255,255,255,0.22);
     }
     .bin.wrong { animation: shake 0.5s ease; }
 
@@ -126,10 +279,10 @@
     }
     .trash-card:active { cursor: grabbing; }
     .trash-card.dragging {
-      transform: scale(1.15) rotate(8deg);
+      transform: scale(1.12) rotate(6deg);
       box-shadow: 0 25px 50px rgba(0,0,0,0.4);
       z-index: 1000;
-      filter: brightness(1.1);
+      filter: brightness(1.05);
     }
     .trash-card.correct { animation: pop-in 0.5s ease forwards; }
     .sparkle { animation: sparkle 0.7s ease-out forwards; pointer-events: none; }
@@ -156,7 +309,7 @@
 
     .level-node { transition: all 0.2s ease; border-radius: 16px; position: relative; overflow: hidden; }
     .level-node:not(.locked) { cursor: pointer; }
-    .level-node:not(.locked):active { transform: scale(0.92); }
+    .level-node:not(.locked):active { transform: translateY(5px); }
     .level-node.locked { filter: grayscale(1) brightness(0.5); opacity: 0.7; }
     .level-node::before {
       content: '';
@@ -179,118 +332,20 @@
     }
     .screen.active { display: flex; }
 
-    .boost-btn { transition: all 0.15s ease; border: 2px solid rgba(255,255,255,0.3); }
+    .boost-btn { transition: transform .12s ease, filter .12s ease, box-shadow .12s ease; }
     .boost-btn:not(:disabled) { cursor: pointer; }
-    .boost-btn:not(:disabled):active { transform: scale(0.92); }
+    .boost-btn:not(:disabled):active { transform: translateY(5px); filter: brightness(.98); }
     .boost-btn:disabled { opacity: 0.4; filter: grayscale(0.7); }
 
     .clean-overlay { animation: pulse 0.8s infinite; background: linear-gradient(135deg, rgba(202, 138, 4, 0.9), rgba(177, 98, 0, 0.9)); }
-    .timer-critical { animation: timer-pulse 0.5s ease infinite; color: #fca5a5; font-weight: 800; }
+    .timer-critical { animation: timer-pulse 0.5s ease infinite; color: #fca5a5; font-weight: 900; }
 
     /* SCROLLBAR */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
-
-    /* =========================
-       ✅ HOME (TITLE IMAGE + BETTER BUTTONS)
-       ========================= */
-    @keyframes homeFloat {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes sheen {
-      0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
-      25% { opacity: .35; }
-      60% { opacity: .15; }
-      100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
-    }
-
-    .home-title-wrap{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin-bottom: 1.1rem;
-      animation: homeFloat 3s ease-in-out infinite;
-    }
-    .home-title-img{
-      width: min(340px, 84vw);
-      height: auto;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
-      user-select:none;
-      pointer-events:none;
-    }
-
-    .home-btn{
-      position: relative;
-      width: 100%;
-      padding: 1rem 1.25rem;
-      border-radius: 1.25rem;
-      font-weight: 800;
-      font-size: 1.125rem;
-      color: white;
-      box-shadow: 0 16px 28px rgba(0,0,0,.28);
-      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-      overflow:hidden;
-      border: 2px solid rgba(255,255,255,.22);
-      backdrop-filter: blur(6px);
-    }
-    .home-btn:active{
-      transform: scale(.97);
-      filter: brightness(.98);
-      box-shadow: 0 10px 18px rgba(0,0,0,.22);
-    }
-    .home-btn:hover{
-      transform: scale(1.02);
-      box-shadow: 0 20px 34px rgba(0,0,0,.32);
-    }
-    .home-btn::after{
-      content:"";
-      position:absolute;
-      top:-40%;
-      left:-40%;
-      width: 40%;
-      height: 180%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
-      opacity: 0;
-    }
-    .home-btn:hover::after{
-      opacity: 1;
-      animation: sheen 1.25s ease forwards;
-    }
-    .home-btn-inner{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:.75rem;
-      position:relative;
-      z-index:1;
-    }
-    .home-icon{
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.22);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
-    }
-    .home-icon span{ font-size: 20px; line-height: 1; }
-    .home-sub{
-      color: rgba(236, 253, 245, .92);
-      text-shadow: 0 6px 14px rgba(0,0,0,.35);
-    }
-    .home-pill{
-      border: 2px solid rgba(255,255,255,.18);
-      box-shadow: 0 14px 26px rgba(0,0,0,.22);
-    }
   </style>
-
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 </head>
 
 <body class="h-full w-full game-font overflow-hidden">
@@ -299,112 +354,52 @@
     <!-- HOME SCREEN -->
     <div id="home-screen" class="screen active bg-home flex flex-col items-center justify-center p-6 text-center min-h-screen">
 
-      <!-- TITLE IMAGE ONLY -->
       <div class="home-title-wrap">
         <img src="background-ui/title.png" alt="EcoRush" class="home-title-img" />
       </div>
 
-  
+      <p class="text-lg mb-8 text-white/90 drop-shadow">Clean. Sort. Save the Planet.</p>
 
-      <!-- BUTTONS -->
       <div class="space-y-4 w-full max-w-xs mb-10">
-
-        <button onclick="showScreen('map-screen')"
-          class="home-btn"
-          style="background: linear-gradient(135deg, #22c55e 0%, #10b981 45%, #059669 100%);">
-          <div class="home-btn-inner">
-            <div class="home-icon"><span>🎮</span></div>
-            <span>Play</span>
+        <button onclick="showScreen('map-screen')" class="cart-btn btn-green" aria-label="Play">
+          <div class="row">
+            <div class="badge">
+              <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg>
+            </div>
+            <span class="btn-label">Play</span>
           </div>
         </button>
 
-        <button onclick="showScreen('shop-screen')"
-          class="home-btn"
-          style="background: linear-gradient(135deg, #f59e0b 0%, #fb923c 55%, #f97316 100%);">
-          <div class="home-btn-inner">
-            <div class="home-icon"><span>🛒</span></div>
-            <span>Shop</span>
+        <button onclick="showScreen('shop-screen')" class="cart-btn btn-orange" aria-label="Shop">
+          <div class="row">
+            <div class="badge">
+              <svg class="svg" viewBox="0 0 24 24">
+                <path d="M6 7h15l-1.5 9H7.2L6 7z"/>
+                <path d="M6 7l-2-3H2"/>
+                <path d="M9 21a1 1 0 100-2 1 1 0 000 2z"/>
+                <path d="M18 21a1 1 0 100-2 1 1 0 000 2z"/>
+              </svg>
+            </div>
+            <span class="btn-label">Shop</span>
           </div>
         </button>
-
-        <button onclick="showScreen('tutorial-screen')"
-          class="home-btn"
-          style="background: linear-gradient(135deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 100%);">
-          <div class="home-btn-inner">
-            <div class="home-icon"><span>📖</span></div>
-            <span>How to Play</span>
-          </div>
-        </button>
-
       </div>
 
       <!-- COINS & LIVES -->
-      <div class="flex gap-6 text-center">
-        <div class="home-pill flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-3xl">🪙</span>
-          <span id="home-coins" class="text-2xl font-bold text-white">0</span>
+      <div class="flex gap-4 text-center">
+        <div class="pill flex items-center gap-3 px-6 py-3">
+          <svg class="svg" viewBox="0 0 24 24">
+            <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+            <path d="M8.5 12h7"></path>
+            <path d="M12 8.5v7"></path>
+          </svg>
+          <span id="home-coins" class="text-2xl font-black text-white drop-shadow">0</span>
         </div>
-        <div class="home-pill flex items-center gap-3 bg-gradient-to-r from-red-500 to-pink-500 px-6 py-3 rounded-full shadow-lg">
-          <span class="text-2xl" id="home-lives-icon">❤️</span>
-          <span id="home-lives" class="text-2xl font-bold text-white">5</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TUTORIAL SCREEN -->
-    <div id="tutorial-screen" class="screen bg-tutorial flex-col p-4">
-      <div class="flex items-center justify-between mb-4">
-        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white drop-shadow">How to Play</h2>
-        <div class="w-10"></div>
-      </div>
-
-      <div class="flex-1 overflow-y-auto space-y-4 pb-4">
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-2">🎯 Goal</h3>
-          <p class="text-emerald-100">Sort all trash items into the correct bins before time runs out!</p>
-        </div>
-
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-2">🗑️ The 4 Bins</h3>
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">🥬</span>
-              <span class="text-emerald-100"><strong>Biodegradable</strong> - Food scraps, plant waste</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">♻️</span>
-              <span class="text-emerald-100"><strong>Recyclable</strong> - Clean plastic, metal, paper</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center">🗑️</span>
-              <span class="text-emerald-100"><strong>Residual</strong> - Non-recyclable waste</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">☠️</span>
-              <span class="text-emerald-100"><strong>Hazardous</strong> - Batteries, chemicals</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-2">⚡ Tips</h3>
-          <ul class="text-emerald-100 text-sm space-y-1">
-            <li>• Build streaks for bonus points!</li>
-            <li>• Some items need cleaning first - tap them!</li>
-            <li>• Watch the contamination meter!</li>
-            <li>• Buy boosts in the shop!</li>
-          </ul>
-        </div>
-
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-2">🚀 Boosts</h3>
-          <div class="space-y-2 text-sm text-emerald-100">
-            <p><strong>💡 Hint</strong> - Shows the correct bin</p>
-            <p><strong>🛡️ Shield</strong> - Blocks next penalty</p>
-            <p><strong>🌀 Vacuum</strong> - Auto-sorts one item</p>
-            <p><strong>❄️ Freeze</strong> - Stops the timer</p>
-          </div>
+        <div class="pill flex items-center gap-3 px-6 py-3">
+          <svg class="svg svg-fill" viewBox="0 0 24 24">
+            <path d="M12 21s-7-4.6-9.3-8.8C.9 8.6 3.1 6 6 6c1.7 0 3.1.9 4 2.1C10.9 6.9 12.3 6 14 6c2.9 0 5.1 2.6 3.3 6.2C19 16.4 12 21 12 21z"/>
+          </svg>
+          <span id="home-lives" class="text-2xl font-black text-white drop-shadow">5</span>
         </div>
       </div>
     </div>
@@ -412,14 +407,29 @@
     <!-- MAP SCREEN -->
     <div id="map-screen" class="screen bg-map flex-col p-4">
       <div class="flex items-center justify-between mb-4">
-        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white drop-shadow">Select Level</h2>
-        <button onclick="showScreen('shop-screen')" class="p-2 bg-amber-500/30 rounded-full"><span class="text-xl">🛒</span></button>
+        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back">
+          <svg class="svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+
+        <h2 class="text-xl font-black text-white drop-shadow">Select Level</h2>
+
+        <button onclick="showScreen('shop-screen')" class="icon-btn" aria-label="Shop">
+          <svg class="svg" viewBox="0 0 24 24">
+            <path d="M6 7h15l-1.5 9H7.2L6 7z"/>
+            <path d="M6 7l-2-3H2"/>
+            <path d="M9 21a1 1 0 100-2 1 1 0 000 2z"/>
+            <path d="M18 21a1 1 0 100-2 1 1 0 000 2z"/>
+          </svg>
+        </button>
       </div>
 
-      <div class="flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full mb-4 self-center">
-        <span class="text-xl">🪙</span>
-        <span id="map-coins" class="text-lg font-bold text-amber-300">0</span>
+      <div class="pill flex items-center gap-2 px-4 py-2 mb-4 self-center">
+        <svg class="svg" viewBox="0 0 24 24">
+          <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+          <path d="M8.5 12h7"></path>
+          <path d="M12 8.5v7"></path>
+        </svg>
+        <span id="map-coins" class="text-lg font-black text-white drop-shadow">0</span>
       </div>
 
       <div id="level-grid" class="flex-1 overflow-y-auto pb-4 space-y-6"></div>
@@ -428,76 +438,137 @@
     <!-- SHOP SCREEN -->
     <div id="shop-screen" class="screen bg-shop flex-col p-4">
       <div class="flex items-center justify-between mb-4">
-        <button onclick="showScreen('home-screen')" class="p-2 bg-white/20 rounded-full"><span class="text-xl">←</span></button>
-        <h2 class="text-xl font-bold text-white drop-shadow">Shop</h2>
-        <div class="w-10"></div>
+        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back">
+          <svg class="svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+
+        <h2 class="text-xl font-black text-white drop-shadow">Shop</h2>
+        <div class="w-12"></div>
       </div>
 
-      <div class="flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full mb-4 self-center">
-        <span class="text-xl">🪙</span>
-        <span id="shop-coins" class="text-lg font-bold text-amber-300">0</span>
+      <div class="pill flex items-center gap-2 px-4 py-2 mb-4 self-center">
+        <svg class="svg" viewBox="0 0 24 24">
+          <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+          <path d="M8.5 12h7"></path>
+          <path d="M12 8.5v7"></path>
+        </svg>
+        <span id="shop-coins" class="text-lg font-black text-white drop-shadow">0</span>
       </div>
 
       <div class="flex-1 overflow-y-auto space-y-3 pb-4">
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-3">🎒 Your Inventory</h3>
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/15">
+          <h3 class="text-lg font-black text-white mb-3 drop-shadow">Your Inventory</h3>
           <div id="inventory-display" class="grid grid-cols-2 gap-3"></div>
         </div>
 
-        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-          <h3 class="text-lg font-bold text-white mb-3">🛍️ Buy Boosts</h3>
+        <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/15">
+          <h3 class="text-lg font-black text-white mb-3 drop-shadow">Buy Boosts</h3>
           <div class="space-y-3">
-            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
-                <span class="text-3xl">💡</span>
+                <div class="badge" style="background: rgba(255,255,255,.18);">
+                  <svg class="svg" viewBox="0 0 24 24">
+                    <path d="M9 18h6"/>
+                    <path d="M10 22h4"/>
+                    <path d="M12 2a7 7 0 00-4 12c.7.6 1 1.3 1 2h6c0-.7.3-1.4 1-2a7 7 0 00-4-12z"/>
+                  </svg>
+                </div>
                 <div>
-                  <p class="font-bold text-white">Hint</p>
+                  <p class="font-black text-white">Hint</p>
                   <p class="text-xs text-emerald-200">Shows correct bin</p>
                 </div>
               </div>
-              <button onclick="buyBoost('hint')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
-                <span>50</span><span class="text-sm">🪙</span>
+              <button onclick="buyBoost('hint')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+                <div class="row" style="gap:8px;">
+                  <span class="btn-label" style="font-size:14px;">50</span>
+                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                    <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+                    <path d="M8.5 12h7"></path>
+                    <path d="M12 8.5v7"></path>
+                  </svg>
+                </div>
               </button>
             </div>
 
-            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
-                <span class="text-3xl">🛡️</span>
+                <div class="badge" style="background: rgba(255,255,255,.18);">
+                  <svg class="svg" viewBox="0 0 24 24">
+                    <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z"/>
+                  </svg>
+                </div>
                 <div>
-                  <p class="font-bold text-white">Shield</p>
+                  <p class="font-black text-white">Shield</p>
                   <p class="text-xs text-emerald-200">Blocks next penalty</p>
                 </div>
               </div>
-              <button onclick="buyBoost('shield')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
-                <span>80</span><span class="text-sm">🪙</span>
+              <button onclick="buyBoost('shield')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+                <div class="row" style="gap:8px;">
+                  <span class="btn-label" style="font-size:14px;">80</span>
+                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                    <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+                    <path d="M8.5 12h7"></path>
+                    <path d="M12 8.5v7"></path>
+                  </svg>
+                </div>
               </button>
             </div>
 
-            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
-                <span class="text-3xl">🌀</span>
+                <div class="badge" style="background: rgba(255,255,255,.18);">
+                  <svg class="svg" viewBox="0 0 24 24">
+                    <path d="M3 12h10"/>
+                    <path d="M13 12l-3-3"/>
+                    <path d="M13 12l-3 3"/>
+                    <path d="M14 4h7v16h-7z"/>
+                  </svg>
+                </div>
                 <div>
-                  <p class="font-bold text-white">Vacuum</p>
+                  <p class="font-black text-white">Vacuum</p>
                   <p class="text-xs text-emerald-200">Auto-sorts 1 item</p>
                 </div>
               </div>
-              <button onclick="buyBoost('vacuum')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
-                <span>120</span><span class="text-sm">🪙</span>
+              <button onclick="buyBoost('vacuum')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+                <div class="row" style="gap:8px;">
+                  <span class="btn-label" style="font-size:14px;">120</span>
+                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                    <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+                    <path d="M8.5 12h7"></path>
+                    <path d="M12 8.5v7"></path>
+                  </svg>
+                </div>
               </button>
             </div>
 
-            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
-                <span class="text-3xl">❄️</span>
+                <div class="badge" style="background: rgba(255,255,255,.18);">
+                  <svg class="svg" viewBox="0 0 24 24">
+                    <path d="M12 2v20"/>
+                    <path d="M5 7h14"/>
+                    <path d="M7 12h10"/>
+                    <path d="M9 17h6"/>
+                  </svg>
+                </div>
                 <div>
-                  <p class="font-bold text-white">Freeze</p>
+                  <p class="font-black text-white">Freeze</p>
                   <p class="text-xs text-emerald-200">Stops timer 5s</p>
                 </div>
               </div>
-              <button onclick="buyBoost('freeze')" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl flex items-center gap-1">
-                <span>100</span><span class="text-sm">🪙</span>
+              <button onclick="buyBoost('freeze')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+                <div class="row" style="gap:8px;">
+                  <span class="btn-label" style="font-size:14px;">100</span>
+                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                    <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+                    <path d="M8.5 12h7"></path>
+                    <path d="M12 8.5v7"></path>
+                  </svg>
+                </div>
               </button>
             </div>
+
           </div>
         </div>
       </div>
@@ -508,116 +579,176 @@
 
       <!-- Top HUD -->
       <div class="bg-black/30 p-3 flex items-center justify-between backdrop-blur-sm">
-        <button onclick="pauseGame()" class="p-2 bg-white/20 rounded-full"><span class="text-lg">⏸️</span></button>
+        <button onclick="pauseGame()" class="icon-btn" aria-label="Pause">
+          <svg class="svg" viewBox="0 0 24 24">
+            <path d="M7 5v14"></path>
+            <path d="M17 5v14"></path>
+          </svg>
+        </button>
 
         <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1">
-            <span class="text-lg">⭐</span>
-            <span id="game-score" class="font-bold text-white">0</span>
+          <div class="pill flex items-center gap-2 px-3 py-2">
+            <svg class="svg svg-fill" viewBox="0 0 24 24">
+              <path d="M12 2l2.7 6.7 7.3.6-5.6 4.6 1.8 7.1-6.2-3.8-6.2 3.8 1.8-7.1L2 9.3l7.3-.6L12 2z"/>
+            </svg>
+            <span id="game-score" class="font-black text-white">0</span>
           </div>
-          <div id="timer-display" class="flex items-center gap-1 hidden">
-            <span class="text-lg">⏱️</span>
-            <span id="game-timer" class="font-bold text-white">60</span>
+
+          <div id="timer-display" class="pill flex items-center gap-2 px-3 py-2 hidden">
+            <svg class="svg" viewBox="0 0 24 24">
+              <path d="M12 7v6l3 2"></path>
+              <path d="M9 2h6"></path>
+              <path d="M12 22a9 9 0 100-18 9 9 0 000 18z"></path>
+            </svg>
+            <span id="game-timer" class="font-black text-white">60</span>
           </div>
         </div>
 
-        <div class="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full">
-          <span class="text-sm">🪙</span>
-          <span id="game-coins" class="text-sm font-bold text-amber-300">0</span>
+        <div class="pill flex items-center gap-2 px-3 py-2">
+          <svg class="svg" viewBox="0 0 24 24">
+            <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
+            <path d="M8.5 12h7"></path>
+            <path d="M12 8.5v7"></path>
+          </svg>
+          <span id="game-coins" class="text-sm font-black text-white">0</span>
         </div>
       </div>
 
       <!-- Streak & Wave Info -->
       <div class="flex justify-between items-center px-3 py-2 bg-black/20">
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-white">Level</span>
-          <span id="level-display" class="font-bold text-amber-300">1</span>
+        <div class="pill flex items-center gap-2 px-3 py-2">
+          <span class="text-xs text-white/90">Level</span>
+          <span id="level-display" class="font-black text-white">1</span>
         </div>
-        <div id="streak-display" class="flex items-center gap-1 bg-orange-500/30 px-2 py-1 rounded-full hidden">
-          <span class="text-sm">🔥</span>
-          <span id="streak-count" class="text-sm font-bold text-orange-300">x1</span>
+
+        <div id="streak-display" class="pill flex items-center gap-2 px-3 py-2 hidden">
+          <svg class="svg svg-fill" viewBox="0 0 24 24">
+            <path d="M13 2s2 3 2 6-2 5-2 5 1-3-2-5-1-6-1-6 0 3-3 6c-3 3-2 8 2 11 1 .7 2 .9 3 1 6 0 10-6 7-12-2-4-6-6-6-6z"/>
+          </svg>
+          <span id="streak-count" class="text-sm font-black text-white">x1</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-white">Wave</span>
-          <span id="wave-display" class="font-bold text-cyan-300">1/1</span>
+
+        <div class="pill flex items-center gap-2 px-3 py-2">
+          <span class="text-xs text-white/90">Wave</span>
+          <span id="wave-display" class="font-black text-white">1/1</span>
         </div>
       </div>
 
       <!-- Contamination Bar -->
       <div class="px-3 py-2 bg-black/20">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs text-white">☣️ Contamination</span>
-          <span id="contamination-percent" class="text-xs text-red-300">0%</span>
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs text-white/90">Contamination</span>
+          <span id="contamination-percent" class="text-xs text-red-200 font-black">0%</span>
         </div>
-        <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
+        <div class="h-3 bg-gray-700 rounded-full overflow-hidden border border-white/10">
           <div id="contamination-bar" class="h-full contamination-bar" style="width: 0%"></div>
         </div>
       </div>
 
       <!-- Boosts Bar -->
       <div class="flex justify-center gap-2 px-3 py-2 bg-black/10">
-        <button id="boost-hint" onclick="useBoost('hint')" class="boost-btn flex flex-col items-center p-2 bg-purple-500/30 rounded-xl" disabled>
-          <span class="text-xl">💡</span>
-          <span class="text-xs text-white" id="hint-count">0</span>
-        </button>
-        <button id="boost-shield" onclick="useBoost('shield')" class="boost-btn flex flex-col items-center p-2 bg-blue-500/30 rounded-xl" disabled>
-          <span class="text-xl">🛡️</span>
-          <span class="text-xs text-white" id="shield-count">0</span>
-        </button>
-        <button id="boost-vacuum" onclick="useBoost('vacuum')" class="boost-btn flex flex-col items-center p-2 bg-green-500/30 rounded-xl" disabled>
-          <span class="text-xl">🌀</span>
-          <span class="text-xs text-white" id="vacuum-count">0</span>
-        </button>
-        <button id="boost-freeze" onclick="useBoost('freeze')" class="boost-btn flex flex-col items-center p-2 bg-cyan-500/30 rounded-xl" disabled>
-          <span class="text-xl">❄️</span>
-          <span class="text-xs text-white" id="freeze-count">0</span>
+        <button id="boost-hint" onclick="useBoost('hint')" class="icon-btn boost-btn" disabled aria-label="Hint">
+          <svg class="svg" viewBox="0 0 24 24">
+            <path d="M9 18h6"/>
+            <path d="M10 22h4"/>
+            <path d="M12 2a7 7 0 00-4 12c.7.6 1 1.3 1 2h6c0-.7.3-1.4 1-2a7 7 0 00-4-12z"/>
+          </svg>
+          <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="hint-count">0</span>
         </button>
 
-        <div id="shield-active" class="hidden items-center px-2 bg-blue-500/50 rounded-lg"><span class="text-sm">🛡️ Active</span></div>
+        <button id="boost-shield" onclick="useBoost('shield')" class="icon-btn boost-btn" disabled aria-label="Shield">
+          <svg class="svg" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z"/></svg>
+          <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="shield-count">0</span>
+        </button>
+
+        <button id="boost-vacuum" onclick="useBoost('vacuum')" class="icon-btn boost-btn" disabled aria-label="Vacuum">
+          <svg class="svg" viewBox="0 0 24 24">
+            <path d="M3 12h10"/>
+            <path d="M13 12l-3-3"/>
+            <path d="M13 12l-3 3"/>
+            <path d="M14 4h7v16h-7z"/>
+          </svg>
+          <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="vacuum-count">0</span>
+        </button>
+
+        <button id="boost-freeze" onclick="useBoost('freeze')" class="icon-btn boost-btn" disabled aria-label="Freeze">
+          <svg class="svg" viewBox="0 0 24 24">
+            <path d="M12 2v20"/>
+            <path d="M5 7h14"/>
+            <path d="M7 12h10"/>
+            <path d="M9 17h6"/>
+          </svg>
+          <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="freeze-count">0</span>
+        </button>
+
+        <div id="shield-active" class="hidden items-center px-3 py-2 pill"><span class="text-xs font-black text-white">Shield</span></div>
       </div>
 
       <!-- Bins + Tray -->
       <div class="flex-1 flex flex-col justify-between p-3 min-h-0">
         <div id="bins-container" class="grid grid-cols-4 gap-2 mb-3">
-          <div class="bin flex flex-col items-center p-2 bg-green-600 rounded-2xl shadow-lg" data-bin="biodegradable">
-            <span class="text-2xl mb-1">🥬</span>
-            <span class="text-xs text-white font-bold text-center leading-tight">Bio</span>
+          <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-green-600/85 border border-white/10" data-bin="biodegradable">
+            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+              <path d="M20 4s-6 0-10 4-4 10-4 10 6 0 10-4 4-10 4-10z"/>
+              <path d="M10 14c3-1 6-4 7-7"/>
+            </svg>
+            <span class="text-xs text-white font-black text-center leading-tight mt-1">Bio</span>
           </div>
-          <div class="bin flex flex-col items-center p-2 bg-blue-600 rounded-2xl shadow-lg" data-bin="recyclable">
-            <span class="text-2xl mb-1">♻️</span>
-            <span class="text-xs text-white font-bold text-center leading-tight">Recycle</span>
+
+          <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-blue-600/85 border border-white/10" data-bin="recyclable">
+            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+              <path d="M7 7l2-4 4 2"/>
+              <path d="M9 3l-2 4 3 3"/>
+              <path d="M17 7l-2-4-4 2"/>
+              <path d="M15 3l2 4-3 3"/>
+              <path d="M6 16l-4-1 2-4"/>
+              <path d="M2 15l4 1 3-3"/>
+              <path d="M18 16l4-1-2-4"/>
+              <path d="M22 15l-4 1-3-3"/>
+            </svg>
+            <span class="text-xs text-white font-black text-center leading-tight mt-1">Recycle</span>
           </div>
-          <div class="bin flex flex-col items-center p-2 bg-gray-600 rounded-2xl shadow-lg" data-bin="residual">
-            <span class="text-2xl mb-1">🗑️</span>
-            <span class="text-xs text-white font-bold text-center leading-tight">Residual</span>
+
+          <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-gray-600/85 border border-white/10" data-bin="residual">
+            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+              <path d="M4 7h16"/>
+              <path d="M7 7l1 14h8l1-14"/>
+              <path d="M9 7V4h6v3"/>
+            </svg>
+            <span class="text-xs text-white font-black text-center leading-tight mt-1">Residual</span>
           </div>
-          <div class="bin flex flex-col items-center p-2 bg-red-600 rounded-2xl shadow-lg" data-bin="hazardous">
-            <span class="text-2xl mb-1">☠️</span>
-            <span class="text-xs text-white font-bold text-center leading-tight">Hazard</span>
+
+          <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-red-600/85 border border-white/10" data-bin="hazardous">
+            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+              <path d="M12 2l10 18H2L12 2z"/>
+              <path d="M12 9v4"/>
+              <path d="M12 17h.01"/>
+            </svg>
+            <span class="text-xs text-white font-black text-center leading-tight mt-1">Hazard</span>
           </div>
         </div>
 
-        <div id="trash-tray" class="flex-1 bg-black/20 rounded-2xl p-3 overflow-hidden flex flex-wrap content-start gap-2 justify-center"></div>
+        <div id="trash-tray" class="flex-1 bg-black/20 rounded-2xl p-3 overflow-hidden flex flex-wrap content-start gap-2 justify-center border border-white/10"></div>
       </div>
     </div>
 
     <!-- PAUSE MODAL -->
     <div id="pause-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-6 z-50">
-      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in">
-        <h2 class="text-2xl font-bold text-white mb-6">⏸️ Paused</h2>
+      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in border border-white/10">
+        <h2 class="text-2xl font-black text-white mb-6 drop-shadow">Paused</h2>
         <div class="space-y-3">
-          <button onclick="resumeGame()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl">▶️ Resume</button>
-          <button onclick="restartLevel()" class="w-full py-3 bg-amber-500 text-white font-bold rounded-xl">🔄 Restart</button>
-          <button onclick="quitToMap()" class="w-full py-3 bg-red-500 text-white font-bold rounded-xl">🚪 Quit</button>
+          <button onclick="resumeGame()" class="cart-btn btn-green">Resume</button>
+          <button onclick="restartLevel()" class="cart-btn btn-orange">Restart</button>
+          <button onclick="quitToMap()" class="cart-btn btn-red">Quit</button>
         </div>
       </div>
     </div>
 
     <!-- RESULT MODAL -->
     <div id="result-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-6 z-50">
-      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in">
+      <div class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-3xl p-6 w-full max-w-sm text-center pop-in border border-white/10">
         <div id="result-emoji" class="text-6xl mb-4">🎉</div>
-        <h2 id="result-title" class="text-2xl font-bold text-white mb-2">Level Complete!</h2>
+        <h2 id="result-title" class="text-2xl font-black text-white mb-2 drop-shadow">Level Complete!</h2>
         <p id="result-message" class="text-emerald-200 mb-4">Great job!</p>
 
         <div id="result-stars" class="flex justify-center gap-2 mb-4 text-4xl">
@@ -627,20 +758,20 @@
         </div>
 
         <div class="flex justify-center gap-4 mb-6">
-          <div class="bg-black/20 px-4 py-2 rounded-xl">
-            <p class="text-xs text-emerald-300">Score</p>
-            <p id="result-score" class="text-xl font-bold text-white">0</p>
+          <div class="pill px-4 py-2 rounded-xl">
+            <p class="text-xs text-white/80 font-black">Score</p>
+            <p id="result-score" class="text-xl font-black text-white">0</p>
           </div>
-          <div class="bg-black/20 px-4 py-2 rounded-xl">
-            <p class="text-xs text-emerald-300">Coins</p>
-            <p id="result-coins" class="text-xl font-bold text-amber-300">+0</p>
+          <div class="pill px-4 py-2 rounded-xl">
+            <p class="text-xs text-white/80 font-black">Coins</p>
+            <p id="result-coins" class="text-xl font-black text-white">+0</p>
           </div>
         </div>
 
         <div class="space-y-3">
-          <button id="next-level-btn" onclick="nextLevel()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl">➡️ Next Level</button>
-          <button onclick="restartLevel()" class="w-full py-3 bg-amber-500 text-white font-bold rounded-xl">🔄 Retry</button>
-          <button onclick="quitToMap()" class="w-full py-3 bg-white/20 text-white font-bold rounded-xl">🗺️ Map</button>
+          <button id="next-level-btn" onclick="nextLevel()" class="cart-btn btn-green">Next Level</button>
+          <button onclick="restartLevel()" class="cart-btn btn-orange">Retry</button>
+          <button onclick="quitToMap()" class="cart-btn btn-blue" style="color:#0b1c2a;">Map</button>
         </div>
       </div>
     </div>
@@ -656,13 +787,120 @@
 
   <script>
     // =========================================================
-    // ✅ TRASH ICONS: EASY MODE
-    // - Put images in: trash-icons/
-    // - Name files SAME AS item.name but slugified:
-    //   "Banana Peel" -> trash-icons/banana-peel.webp
-    // - If icon not found, auto fallback to Twemoji, then emoji text
+    // 🔊 SOUND EFFECTS (LOCAL FILES) + 🎵 BGM (ALWAYS ON)
+    // Put audio files in: /sounds/
     // =========================================================
+    const SFX = {
+      click:   "sounds/click.mp3",
+      correct: "sounds/correct.mp3",
+      wrong:   "sounds/wrong.mp3",
+      clean:   "sounds/clean.mp3",
+      win:     "sounds/win.mp3",
+      lose:    "sounds/lose.mp3",
+      buy:     "sounds/buy.mp3"
+    };
 
+    const BGM_SRC = "sounds/bgm.mp3";  // ✅ REQUIRED: background music always
+
+    let sfxEnabled = true;
+    let audioUnlocked = false;
+    const audioPool = {};
+
+    // BGM
+    let bgmAudio = null;
+
+    function initSfxPool() {
+      Object.entries(SFX).forEach(([key, src]) => {
+        audioPool[key] = Array.from({ length: 4 }, () => {
+          const a = new Audio(src);
+          a.preload = "auto";
+          a.volume = 0.85;
+          return a;
+        });
+      });
+    }
+
+    function initBgm() {
+      if (bgmAudio) return;
+      bgmAudio = new Audio(BGM_SRC);
+      bgmAudio.loop = true;
+      bgmAudio.preload = "auto";
+      bgmAudio.volume = 0.35;
+    }
+
+    function playBgm() {
+      // Autoplay is blocked until a user gesture; we start on first touch/click.
+      initBgm();
+      if (!bgmAudio) return;
+      if (!bgmAudio.paused) return;
+      bgmAudio.play().catch(() => {});
+    }
+
+    function playSfx(name, vol = 0.85) {
+      if (!sfxEnabled) return;
+      const pool = audioPool[name];
+      if (!pool) return;
+
+      const a = pool.find(x => x.paused || x.ended) || pool[0];
+      try {
+        a.volume = vol;
+        a.currentTime = 0;
+        a.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    function unlockAudioOnce() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+
+      try {
+        // unlock SFX
+        const a = audioPool.click?.[0];
+        if (a) {
+          a.volume = 0.001;
+          a.currentTime = 0;
+          a.play().then(() => {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = 0.85;
+          }).catch(() => {});
+        }
+
+        // unlock BGM then start it (ALWAYS)
+        initBgm();
+        if (bgmAudio) {
+          bgmAudio.volume = 0.001;
+          bgmAudio.currentTime = 0;
+          bgmAudio.play().then(() => {
+            bgmAudio.pause();
+            bgmAudio.currentTime = 0;
+            bgmAudio.volume = 0.35;
+            playBgm(); // ✅ start after unlock
+          }).catch(() => {
+            // if still blocked, we will try on subsequent clicks anyway
+          });
+        }
+      } catch (e) {}
+    }
+
+    initSfxPool();
+    window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
+    window.addEventListener("touchstart", unlockAudioOnce, { once: true, passive: true });
+
+    // Click sound for ANY button + also retry BGM start
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (btn && !btn.disabled) playSfx("click", 0.75);
+      // ensure BGM keeps trying until browser allows it
+      playBgm();
+    });
+
+    // =========================================================
+    // ✅ TRASH ICONS
+    // - Put images in: trash-icons/
+    // - "Banana Peel" -> trash-icons/banana-peel.png
+    // - If icon not found, fallback to Twemoji, then emoji text
+    // =========================================================
     const TRASH_ICON_FOLDER = "trash-icons";
 
     function slugify(name) {
@@ -699,7 +937,6 @@
     }
 
     // ========== TRASH DATABASE ==========
-    // NOTE: imageSrc is no longer needed. Just add the name + emoji.
     const TRASH_DATABASE = {
       biodegradable: [
         { name: "Banana Peel", emoji: "🍌" },
@@ -861,22 +1098,25 @@
       updateAllCoinDisplays();
     }
 
-    // ✅ HARD FIX: guarantee ONLY the target screen is visible (prevents home showing behind)
+    // ✅ guarantee ONLY the target screen is visible
     function showScreen(screenId) {
       const screens = document.querySelectorAll('.screen');
       screens.forEach(s => {
         s.classList.remove('active');
-        s.style.display = 'none'; // hard hide
+        s.style.display = 'none';
       });
 
       const target = document.getElementById(screenId);
       target.classList.add('active');
-      target.style.display = 'flex'; // hard show
+      target.style.display = 'flex';
 
       if (screenId === 'map-screen') renderLevelMap();
       else if (screenId === 'shop-screen') renderShop();
 
       updateAllCoinDisplays();
+
+      // ✅ BGM should play EVERYTIME (we still need user gesture first)
+      playBgm();
     }
 
     function updateAllCoinDisplays() {
@@ -915,10 +1155,10 @@
       grid.innerHTML = '';
 
       const difficulties = [
-        { name: '🟢 Easy', range: [1, 5], color: 'from-green-500 to-emerald-600' },
-        { name: '🟡 Normal', range: [6, 15], color: 'from-yellow-500 to-amber-600' },
-        { name: '🔴 Hard', range: [16, 25], color: 'from-red-500 to-orange-600' },
-        { name: '🟣 Extreme', range: [26, 30], color: 'from-purple-600 to-pink-600' }
+        { name: 'Easy', range: [1, 5], color: 'from-green-500 to-emerald-600' },
+        { name: 'Normal', range: [6, 15], color: 'from-yellow-500 to-amber-600' },
+        { name: 'Hard', range: [16, 25], color: 'from-red-500 to-orange-600' },
+        { name: 'Extreme', range: [26, 30], color: 'from-purple-600 to-pink-600' }
       ];
 
       difficulties.forEach(difficulty => {
@@ -926,7 +1166,7 @@
         section.className = 'px-4';
 
         const title = document.createElement('h3');
-        title.className = 'text-lg font-bold text-white mb-3 ml-2 drop-shadow';
+        title.className = 'text-lg font-black text-white mb-3 ml-2 drop-shadow';
         title.textContent = difficulty.name;
         section.appendChild(title);
 
@@ -939,13 +1179,14 @@
 
           const node = document.createElement('button');
           node.className = `level-node aspect-square rounded-xl flex flex-col items-center justify-center text-sm ${
-            isUnlocked ? `bg-gradient-to-br ${difficulty.color}` : 'bg-gray-600 locked'
+            isUnlocked ? `bg-gradient-to-br ${difficulty.color} border border-white/10` : 'bg-gray-600 locked'
           }`;
+          node.style.boxShadow = isUnlocked ? '0 10px 0 rgba(0,0,0,.22), 0 18px 24px rgba(0,0,0,.32)' : '';
 
           if (isUnlocked) node.onclick = () => startLevel(i);
 
           node.innerHTML = `
-            <span class="font-bold text-white">${i}</span>
+            <span class="font-black text-white drop-shadow">${i}</span>
             <div class="flex gap-0.5 mt-0.5">
               ${[1, 2, 3].map(s => `<span class="text-xs ${s <= stars ? 'text-amber-300' : 'text-gray-400'}">⭐</span>`).join('')}
             </div>
@@ -962,10 +1203,10 @@
     function renderShop() {
       const inventory = document.getElementById('inventory-display');
       inventory.innerHTML = `
-        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">💡</span><span class="text-white font-bold">${gameState.boosts.hint}</span></div>
-        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">🛡️</span><span class="text-white font-bold">${gameState.boosts.shield}</span></div>
-        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">🌀</span><span class="text-white font-bold">${gameState.boosts.vacuum}</span></div>
-        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2"><span class="text-2xl">❄️</span><span class="text-white font-bold">${gameState.boosts.freeze}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2 border border-white/10"><span class="text-white font-black">Hint</span><span class="text-white font-black ml-auto">${gameState.boosts.hint}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2 border border-white/10"><span class="text-white font-black">Shield</span><span class="text-white font-black ml-auto">${gameState.boosts.shield}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2 border border-white/10"><span class="text-white font-black">Vacuum</span><span class="text-white font-black ml-auto">${gameState.boosts.vacuum}</span></div>
+        <div class="bg-black/20 p-3 rounded-xl flex items-center gap-2 border border-white/10"><span class="text-white font-black">Freeze</span><span class="text-white font-black ml-auto">${gameState.boosts.freeze}</span></div>
       `;
     }
 
@@ -979,9 +1220,10 @@
         saveGame();
         updateAllCoinDisplays();
         renderShop();
-        showToast(`Purchased ${type}! 🎉`);
+        playSfx("buy", 0.8);
+        showToast(`Purchased ${type}!`);
       } else {
-        showToast(`Not enough coins! Need ${cost} 🪙`);
+        showToast(`Not enough coins! Need ${cost}`);
       }
     }
 
@@ -1017,6 +1259,9 @@
       } else {
         document.getElementById('timer-display').classList.add('hidden');
       }
+
+      // ✅ always ensure BGM attempts to play
+      playBgm();
     }
 
     function startTimer() {
@@ -1036,7 +1281,7 @@
         }
 
         if (currentGame.timer <= 0 && currentGame.config.timerType === 'hard') {
-          endGame(false, 'Time ran out! ⏰');
+          endGame(false, 'Time ran out!');
         }
       }, 1000);
     }
@@ -1075,7 +1320,7 @@
         setTimeout(() => {
           const card = createTrashCard(item);
           tray.appendChild(card);
-        }, idx * 100);
+        }, idx * 90);
       });
 
       updateGameUI();
@@ -1087,27 +1332,79 @@
       return item;
     }
 
+    // =========================================================
+    // ✅ DRAG SYSTEM (global) — avoids listener duplication
+    // =========================================================
+    let dragState = null;
+
+    function onGlobalPointerMove(e){
+      if (!dragState) return;
+
+      const touch = e;
+      const x = touch.clientX;
+      const y = touch.clientY;
+
+      dragState.card.style.left = (x - dragState.offsetX) + "px";
+      dragState.card.style.top  = (y - dragState.offsetY) + "px";
+
+      document.querySelectorAll('.bin').forEach(bin => {
+        const r = bin.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) bin.classList.add('highlight');
+        else bin.classList.remove('highlight');
+      });
+    }
+
+    function onGlobalPointerUp(e){
+      if (!dragState) return;
+
+      const x = e.clientX;
+      const y = e.clientY;
+
+      let droppedBin = null;
+      document.querySelectorAll('.bin').forEach(bin => {
+        bin.classList.remove('highlight');
+        const r = bin.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) droppedBin = bin;
+      });
+
+      const { item, card, originalParent } = dragState;
+
+      card.classList.remove("dragging");
+
+      if (droppedBin) {
+        const binCategory = droppedBin.dataset.bin;
+        handleDrop(item, binCategory, card, droppedBin);
+      } else {
+        returnCardToTray(card, originalParent);
+      }
+
+      dragState = null;
+    }
+
+    window.addEventListener("pointermove", onGlobalPointerMove, { passive: false });
+    window.addEventListener("pointerup", onGlobalPointerUp, { passive: false });
+
     function createTrashCard(item) {
       const card = document.createElement('div');
-      card.className = 'trash-card bg-white rounded-xl p-2 shadow-lg cursor-grab flex flex-col items-center pop-in';
-      card.style.width = '70px';
+      card.className = 'trash-card bg-white rounded-xl p-2 shadow-lg flex flex-col items-center pop-in';
+      card.style.width = '74px';
       card.dataset.id = item.id;
       card.dataset.category = item.category;
 
       const needsClean = item.needsCleaning && !item.isCleaned;
 
       const imgDiv = document.createElement('div');
-      imgDiv.className = 'relative w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg mb-1 overflow-hidden';
+      imgDiv.className = 'relative w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg mb-1 overflow-hidden border border-black/10';
 
       const img = document.createElement('img');
-      img.src = getTrashIconSrc(item); // ✅ local icon
+      img.src = getTrashIconSrc(item);
       img.alt = item.name;
       img.className = 'w-10 h-10 object-contain';
       img.loading = 'lazy';
 
       img.onerror = function () {
         this.onerror = null;
-        this.src = getEmojiImageSrc(item.emoji); // fallback to Twemoji
+        this.src = getEmojiImageSrc(item.emoji);
         this.onerror = function () {
           this.style.display = 'none';
           const fallback = document.createElement('span');
@@ -1122,22 +1419,50 @@
       if (needsClean) {
         const overlay = document.createElement('div');
         overlay.className = 'clean-overlay absolute inset-0 rounded-lg flex items-center justify-center';
-        overlay.innerHTML = '<span class="text-white text-xs font-bold">TAP</span>';
+        overlay.innerHTML = '<span class="text-white text-xs font-black">TAP</span>';
         imgDiv.appendChild(overlay);
       }
 
       card.appendChild(imgDiv);
 
       const name = document.createElement('span');
-      name.className = 'text-xs text-gray-700 text-center leading-tight font-medium';
+      name.className = 'text-[10px] text-gray-700 text-center leading-tight font-black';
       name.textContent = item.name;
       card.appendChild(name);
 
       if (needsClean) {
-        card.onclick = (e) => { e.stopPropagation(); cleanItem(item.id); };
+        card.onclick = (ev) => { ev.stopPropagation(); cleanItem(item.id); };
+      } else {
+        card.onclick = null;
       }
 
-      setupDrag(card, item);
+      // pointer down drag (only if clean)
+      card.onpointerdown = (e) => {
+        if (currentGame.isPaused) return;
+        if (item.needsCleaning && !item.isCleaned) return;
+
+        e.preventDefault();
+        card.setPointerCapture?.(e.pointerId);
+
+        const rect = card.getBoundingClientRect();
+        const tray = document.getElementById("trash-tray");
+
+        dragState = {
+          item,
+          card,
+          originalParent: tray,
+          offsetX: e.clientX - rect.left,
+          offsetY: e.clientY - rect.top
+        };
+
+        card.classList.add("dragging");
+        card.style.position = "fixed";
+        card.style.left = rect.left + "px";
+        card.style.top  = rect.top + "px";
+        card.style.zIndex = "1000";
+        document.body.appendChild(card);
+      };
+
       return card;
     }
 
@@ -1150,111 +1475,55 @@
         const overlay = card?.querySelector('.clean-overlay');
         if (overlay) {
           overlay.remove();
-          showToast('✨ Cleaned!');
+          playSfx("clean", 0.85);
+          showToast('Cleaned!');
           const r = card.getBoundingClientRect();
           createSparkle(r.left + 35, r.top + 35, '#3b82f6');
         }
 
         card.onclick = null;
+        // update item reference in drag handler by replacing pointerdown
         const itemData = currentGame.trashItems.find(i => i.id === itemId);
-        setupDrag(card, itemData);
+        card.onpointerdown = (e) => {
+          if (currentGame.isPaused) return;
+          if (itemData.needsCleaning && !itemData.isCleaned) return;
+
+          e.preventDefault();
+          card.setPointerCapture?.(e.pointerId);
+
+          const rect = card.getBoundingClientRect();
+          const tray = document.getElementById("trash-tray");
+
+          dragState = {
+            item: itemData,
+            card,
+            originalParent: tray,
+            offsetX: e.clientX - rect.left,
+            offsetY: e.clientY - rect.top
+          };
+
+          card.classList.add("dragging");
+          card.style.position = "fixed";
+          card.style.left = rect.left + "px";
+          card.style.top  = rect.top + "px";
+          card.style.zIndex = "1000";
+          document.body.appendChild(card);
+        };
       }
-    }
-
-    function setupDrag(card, item) {
-      let isDragging = false;
-      let offsetX, offsetY;
-      let originalParent;
-
-      const onStart = (e) => {
-        if (item.needsCleaning && !item.isCleaned) return;
-
-        e.preventDefault();
-        isDragging = true;
-        card.classList.add('dragging');
-
-        const touch = e.touches ? e.touches[0] : e;
-        const rect = card.getBoundingClientRect();
-
-        offsetX = touch.clientX - rect.left;
-        offsetY = touch.clientY - rect.top;
-
-        originalParent = card.parentElement;
-
-        card.style.position = 'fixed';
-        card.style.left = rect.left + 'px';
-        card.style.top = rect.top + 'px';
-        card.style.zIndex = '1000';
-        document.body.appendChild(card);
-      };
-
-      const onMove = (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-
-        const touch = e.touches ? e.touches[0] : e;
-        card.style.left = (touch.clientX - offsetX) + 'px';
-        card.style.top = (touch.clientY - offsetY) + 'px';
-
-        document.querySelectorAll('.bin').forEach(bin => {
-          const binRect = bin.getBoundingClientRect();
-          const cx = touch.clientX, cy = touch.clientY;
-
-          if (cx >= binRect.left && cx <= binRect.right && cy >= binRect.top && cy <= binRect.bottom) {
-            bin.classList.add('highlight');
-          } else {
-            bin.classList.remove('highlight');
-          }
-        });
-      };
-
-      const onEnd = (e) => {
-        if (!isDragging) return;
-        isDragging = false;
-        card.classList.remove('dragging');
-
-        const touch = e.changedTouches ? e.changedTouches[0] : e;
-
-        let droppedBin = null;
-        document.querySelectorAll('.bin').forEach(bin => {
-          bin.classList.remove('highlight');
-          const binRect = bin.getBoundingClientRect();
-          if (touch.clientX >= binRect.left && touch.clientX <= binRect.right &&
-              touch.clientY >= binRect.top && touch.clientY <= binRect.bottom) {
-            droppedBin = bin;
-          }
-        });
-
-        if (droppedBin) {
-          const binCategory = droppedBin.dataset.bin;
-          handleDrop(item, binCategory, card, droppedBin);
-        } else {
-          returnCardToTray(card, originalParent);
-        }
-      };
-
-      card.onmousedown = null;
-      card.ontouchstart = null;
-
-      card.addEventListener('touchstart', onStart, { passive: false });
-      card.addEventListener('touchmove', onMove, { passive: false });
-      card.addEventListener('touchend', onEnd, { passive: false });
-
-      card.addEventListener('mousedown', onStart);
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onEnd);
     }
 
     function handleDrop(item, binCategory, card, bin) {
       const isCorrect = item.category === binCategory;
 
       if (item.needsCleaning && !item.isCleaned) {
-        showToast('Clean this first! 👆');
+        showToast('Clean this first!');
         returnCardToTray(card, document.getElementById('trash-tray'));
         return;
       }
 
       if (isCorrect) {
+        playSfx("correct", 0.9);
+
         const basePoints = 10;
         const streakMultiplier = Math.min(currentGame.streak + 1, 5);
         const points = basePoints * streakMultiplier;
@@ -1273,21 +1542,23 @@
         if (currentGame.trashItems.length === 0) {
           if (currentGame.currentWave < currentGame.config.waves) {
             currentGame.currentWave++;
-            showToast(`Wave ${currentGame.currentWave}! 🌊`);
-            setTimeout(spawnWave, 1000);
+            showToast(`Wave ${currentGame.currentWave}!`);
+            setTimeout(spawnWave, 900);
           } else {
             endGame(true);
           }
         }
       } else {
+        playSfx("wrong", 0.9);
+
         if (currentGame.shieldActive) {
           currentGame.shieldActive = false;
           document.getElementById('shield-active').classList.add('hidden');
-          showToast('Shield blocked penalty! 🛡️');
+          showToast('Shield blocked penalty!');
         } else {
           currentGame.contamination += currentGame.config.contaminationPenalty;
           if (currentGame.contamination >= 100) {
-            endGame(false, 'Too much contamination! ☣️');
+            endGame(false, 'Too much contamination!');
             return;
           }
         }
@@ -1307,8 +1578,6 @@
       card.style.left = '';
       card.style.top = '';
       card.style.zIndex = '';
-      card.style.transition = '';
-      card.style.transform = '';
       tray.appendChild(card);
     }
 
@@ -1352,7 +1621,7 @@
           currentGame.shieldActive = true;
           document.getElementById('shield-active').classList.remove('hidden');
           document.getElementById('shield-active').classList.add('flex');
-          showToast('Shield activated! 🛡️');
+          showToast('Shield activated!');
           break;
         case 'vacuum': useVacuum(); break;
         case 'freeze': useFreeze(); break;
@@ -1372,9 +1641,9 @@
         setTimeout(() => {
           bin.classList.remove('pulse-glow');
           if (card) card.style.outline = '';
-        }, 3000);
+        }, 2500);
 
-        showToast(`Hint: ${item.name} → ${item.category}! 💡`);
+        showToast(`Hint: ${item.name}`);
       }
     }
 
@@ -1398,7 +1667,7 @@
 
         setTimeout(() => {
           card.style.left = (binRect.left + binRect.width/2 - 35) + 'px';
-          card.style.top = binRect.top + 'px';
+          card.style.top = (binRect.top + 6) + 'px';
           card.style.transform = 'scale(0)';
         }, 50);
 
@@ -1413,27 +1682,27 @@
           if (currentGame.trashItems.length === 0) {
             if (currentGame.currentWave < currentGame.config.waves) {
               currentGame.currentWave++;
-              setTimeout(spawnWave, 1000);
+              setTimeout(spawnWave, 900);
             } else {
               endGame(true);
             }
           }
         }, 600);
 
-        showToast('Vacuum! 🌀');
+        showToast('Vacuum!');
       }
     }
 
     function useFreeze() {
       currentGame.isFreezed = true;
-      showToast('Time frozen! ❄️');
+      showToast('Time frozen!');
 
       document.getElementById('game-screen').style.boxShadow = 'inset 0 0 100px rgba(59, 130, 246, 0.5)';
 
       setTimeout(() => {
         currentGame.isFreezed = false;
         document.getElementById('game-screen').style.boxShadow = '';
-        showToast('Time resumed! ⏱️');
+        showToast('Time resumed!');
       }, 5000);
     }
 
@@ -1445,6 +1714,8 @@
       modal.classList.add('flex');
 
       if (won) {
+        playSfx("win", 0.9);
+
         let stars = 1;
         if (currentGame.contamination < 30) stars++;
         if (currentGame.streak >= 3 || currentGame.score >= currentGame.config.totalTrash * 15) stars++;
@@ -1471,11 +1742,13 @@
               el.classList.add('empty');
               el.classList.remove('earned');
             }
-          }, i * 300);
+          }, i * 250);
         });
 
         document.getElementById('next-level-btn').classList.remove('hidden');
       } else {
+        playSfx("lose", 0.9);
+
         document.getElementById('result-emoji').textContent = '😢';
         document.getElementById('result-title').textContent = 'Level Failed';
         document.getElementById('result-message').textContent = message || 'Try again!';
@@ -1493,6 +1766,9 @@
 
       saveGame();
       updateAllCoinDisplays();
+
+      // ✅ keep BGM playing (no toggle)
+      playBgm();
     }
 
     function nextLevel() {
@@ -1500,7 +1776,7 @@
       document.getElementById('result-modal').classList.remove('flex');
 
       if (currentGame.level < 30) startLevel(currentGame.level + 1);
-      else { showToast('You completed all levels! 🎉'); showScreen('map-screen'); }
+      else { showToast('You completed all levels!'); showScreen('map-screen'); }
     }
 
     function restartLevel() {
@@ -1516,12 +1792,17 @@
       currentGame.isPaused = true;
       document.getElementById('pause-modal').classList.remove('hidden');
       document.getElementById('pause-modal').classList.add('flex');
+
+      // BGM stays (requirement: music always)
+      playBgm();
     }
 
     function resumeGame() {
       currentGame.isPaused = false;
       document.getElementById('pause-modal').classList.add('hidden');
       document.getElementById('pause-modal').classList.remove('flex');
+
+      playBgm();
     }
 
     function quitToMap() {
@@ -1533,16 +1814,15 @@
       document.getElementById('pause-modal').classList.remove('flex');
 
       showScreen('map-screen');
+      playBgm();
     }
 
+    // Element SDK (no editable title text now)
     const defaultConfig = { game_title: 'EcoRush' };
-
     if (window.elementSdk) {
       window.elementSdk.init({
         defaultConfig,
-        onConfigChange: async (config) => {
-          // ✅ Title is now an image: background-ui/title.png (no text to update)
-        },
+        onConfigChange: async (config) => {},
         mapToCapabilities: (config) => ({
           recolorables: [],
           borderables: [],
@@ -1565,6 +1845,10 @@
     }
 
     updateAllCoinDisplays();
+
+    // ✅ start trying BGM as early as possible (will only succeed after user gesture)
+    initBgm();
+    playBgm();
   </script>
 </body>
 </html>
