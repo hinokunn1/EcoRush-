@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="EcoRush">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="apple-touch-icon" href="./icons-web/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons-web/icon-192.png">
   <title>EcoRush</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
@@ -2058,7 +2058,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch((error) => {
+        navigator.serviceWorker.register('/sw.js').catch((error) => {
           console.warn('Service worker registration failed:', error);
         });
       });
