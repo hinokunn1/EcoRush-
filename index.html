@@ -19,42 +19,41 @@
     }
     .game-font { font-family: 'Fredoka', sans-serif; }
 
-    /* Bigger Main Button */
-.main-btn{
-  padding: 20px 22px;
-  font-size: 20px;
-  transform: scale(1.05);
-}
-    /* PLAY special gradient matching logo */
-.btn-play{
-  background: linear-gradient(
-    180deg,
-    #4ade80 0%,
-    #22c55e 40%,
-    #eab308 100%
-  );
-  --glow: rgba(234,179,8,.75);
-}
+    /* Bigger main CTA (Play) */
+    .main-btn{
+      padding: 20px 22px;
+      font-size: 20px;
+      border-radius: 22px;
+    }
 
-/* Animated glow */
-.btn-play.glow{
-  animation: ecoPulse 2.2s ease-in-out infinite;
-}
+    /* PLAY stays GREEN + glow animation */
+    .btn-play{
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 55%, #16a34a 100%);
+      --glow: rgba(34,197,94,.85);
+    }
+    .btn-play.glow{
+      animation: ecoPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes ecoPulse{
+      0%,100%{
+        box-shadow:
+          0 7px 0 rgba(0,0,0,.30),
+          0 18px 30px rgba(0,0,0,.35),
+          0 0 18px rgba(34,197,94,.55);
+      }
+      50%{
+        box-shadow:
+          0 7px 0 rgba(0,0,0,.30),
+          0 18px 30px rgba(0,0,0,.35),
+          0 0 44px rgba(34,197,94,.95);
+      }
+    }
 
-@keyframes ecoPulse{
-  0%,100%{
-    box-shadow:
-      0 8px 0 rgba(0,0,0,.30),
-      0 20px 30px rgba(0,0,0,.35),
-      0 0 20px rgba(234,179,8,.5);
-  }
-  50%{
-    box-shadow:
-      0 8px 0 rgba(0,0,0,.30),
-      0 20px 30px rgba(0,0,0,.35),
-      0 0 40px rgba(234,179,8,.9);
-  }
-}
+    /* SHOP yellow-orange (logo-matching) */
+    .btn-shop{
+      background: linear-gradient(180deg, #fde047 0%, #f59e0b 55%, #ea580c 100%);
+      --glow: rgba(245,158,11,.75);
+    }
 
     /* BACKGROUND IMAGES (LOCAL REPO PATHS) */
     .bg-home    { background: url("background-ui/home.png") center/cover no-repeat; }
@@ -79,7 +78,6 @@
 
     /* =========================
        MODERN CARTOONY UI SYSTEM
-       (cartoony but cleaner/modern)
        ========================= */
     :root{
       --ink:#1b1b1b;
@@ -110,151 +108,117 @@
       --btn-blue-3:#0EA5E9;
     }
 
-    /* Modern cartoony button */
     /* =========================
-   STRONGER GAME BUTTONS
-   ========================= */
-/* =========================
-   MODERN CARTOONY GAME BUTTON
-   (richer + not pale + with glow)
-   ========================= */
-.cart-btn{
-  width: 100%;
-  padding: 16px 18px;
-  border-radius: 20px;
-  font-weight: 900;
-  letter-spacing: .3px;
+       MODERN CARTOONY GAME BUTTON
+       (richer + not pale + with glow)
+       ========================= */
+    .cart-btn{
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 20px;
+      font-weight: 900;
+      letter-spacing: .3px;
 
-  color: #fff;
-  text-shadow: 0 2px 0 rgba(0,0,0,.35);
+      color: #fff;
+      text-shadow: 0 2px 0 rgba(0,0,0,.35);
 
-  border: 2px solid rgba(0,0,0,.18);
-  box-shadow:
-    0 7px 0 rgba(0,0,0,.30),
-    0 18px 30px rgba(0,0,0,.35);
+      border: 2px solid rgba(0,0,0,.18);
 
-  position: relative;
-  overflow: hidden;
-  transform: translateY(0) scale(1);
-  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
-}
+      position: relative;
+      overflow: hidden;
+      transform: translateY(0) scale(1);
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      --glow: rgba(255,255,255,0); /* default off */
+      box-shadow:
+        0 7px 0 rgba(0,0,0,.30),
+        0 18px 30px rgba(0,0,0,.35);
+    }
 
-/* Keep a subtle modern shine (NOT pale) */
-.cart-btn::before{
-  content:"";
-  position:absolute;
-  left: 10px;
-  right: 10px;
-  top: 7px;
-  height: 45%;
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
-  pointer-events:none;
-  opacity: .85;
-}
+    /* subtle shine */
+    .cart-btn::before{
+      content:"";
+      position:absolute;
+      left: 10px;
+      right: 10px;
+      top: 7px;
+      height: 45%;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
+      pointer-events:none;
+      opacity: .85;
+    }
 
-/* Tiny candy-like specular streak */
-.cart-btn::after{
-  content:"";
-  position:absolute;
-  width: 140%;
-  height: 140%;
-  left: -60%;
-  top: -70%;
-  background: radial-gradient(circle at 70% 65%, rgba(255,255,255,.18), rgba(255,255,255,0) 55%);
-  transform: rotate(-12deg);
-  pointer-events:none;
-  opacity: .9;
-}
+    /* candy specular */
+    .cart-btn::after{
+      content:"";
+      position:absolute;
+      width: 140%;
+      height: 140%;
+      left: -60%;
+      top: -70%;
+      background: radial-gradient(circle at 70% 65%, rgba(255,255,255,.18), rgba(255,255,255,0) 55%);
+      transform: rotate(-12deg);
+      pointer-events:none;
+      opacity: .9;
+    }
 
-.cart-btn:active{
-  transform: translateY(6px) scale(.99);
-  filter: brightness(.98) saturate(1.08);
-  box-shadow:
-    0 3px 0 rgba(0,0,0,.30),
-    0 10px 18px rgba(0,0,0,.28);
-}
+    .cart-btn:active{
+      transform: translateY(6px) scale(.99);
+      filter: brightness(.98) saturate(1.08);
+      box-shadow:
+        0 3px 0 rgba(0,0,0,.30),
+        0 10px 18px rgba(0,0,0,.28);
+    }
 
-@media (hover:hover){
-  .cart-btn:hover{
-    transform: translateY(-1px);
-    filter: brightness(1.03) saturate(1.08);
-  }
-}
+    @media (hover:hover){
+      .cart-btn:hover{
+        transform: translateY(-1px);
+        filter: brightness(1.03) saturate(1.08);
+        box-shadow:
+          0 7px 0 rgba(0,0,0,.30),
+          0 18px 30px rgba(0,0,0,.35),
+          0 0 22px var(--glow),
+          0 0 44px rgba(255,255,255,.06);
+      }
+    }
 
-.cart-btn .row{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 10px;
-  position: relative;
-  z-index: 1;
-}
+    /* optional always glowing helper (you can add class="glow" on any cart-btn) */
+    .cart-btn.glow{
+      box-shadow:
+        0 7px 0 rgba(0,0,0,.30),
+        0 18px 30px rgba(0,0,0,.35),
+        0 0 22px var(--glow),
+        0 0 44px rgba(255,255,255,.06);
+    }
 
-.btn-label{
-  font-size: 18px;
-  line-height: 1;
-}
+    .cart-btn .row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
 
-/* =========================
-   RICHER COLORS (less pale)
-   ========================= */
-.btn-green{
-  background: linear-gradient(180deg, #34d399 0%, #22c55e 45%, #15803d 100%);
-}
-.btn-orange{
-  background: linear-gradient(
-    180deg,
-    #facc15 0%,
-    #f59e0b 45%,
-    #d97706 100%
-  );
-  .btn-orange{
-  transform: scale(.95);
-}
-}
-.btn-red{
-  background: linear-gradient(180deg, #f87171 0%, #ef4444 45%, #991b1b 100%);
-}
-.btn-blue{
-  background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 45%, #0369a1 100%);
-}
+    .btn-label{ font-size: 18px; line-height: 1; }
 
-/* =========================
-   GLOW EFFECT (modern game vibe)
-   ========================= */
-.cart-btn{
-  --glow: rgba(255,255,255,0); /* default off, set per button */
-  box-shadow:
-    0 7px 0 rgba(0,0,0,.30),
-    0 18px 30px rgba(0,0,0,.35),
-    0 0 0 rgba(0,0,0,0),
-    0 0 0 rgba(0,0,0,0);
-}
-
-.btn-green{ --glow: rgba(34,197,94,.55); }
-.btn-orange{ --glow: rgba(249,115,22,.55); }
-.btn-red{ --glow: rgba(239,68,68,.50); }
-.btn-blue{ --glow: rgba(14,165,233,.55); }
-
-@media (hover:hover){
-  .cart-btn:hover{
-    box-shadow:
-      0 7px 0 rgba(0,0,0,.30),
-      0 18px 30px rgba(0,0,0,.35),
-      0 0 22px var(--glow),
-      0 0 44px rgba(255,255,255,.06);
-  }
-}
-
-/* Optional: ALWAYS glowing (if you want it even on mobile) */
-.cart-btn.glow{
-  box-shadow:
-    0 7px 0 rgba(0,0,0,.30),
-    0 18px 30px rgba(0,0,0,.35),
-    0 0 22px var(--glow),
-    0 0 44px rgba(255,255,255,.06);
-}
+    /* Richer colors (used everywhere else) */
+    .btn-green{
+      background: linear-gradient(180deg, #34d399 0%, #22c55e 45%, #15803d 100%);
+      --glow: rgba(34,197,94,.55);
+    }
+    .btn-orange{
+      background: linear-gradient(180deg, #facc15 0%, #f59e0b 45%, #d97706 100%);
+      --glow: rgba(249,115,22,.55);
+    }
+    .btn-red{
+      background: linear-gradient(180deg, #f87171 0%, #ef4444 45%, #991b1b 100%);
+      --glow: rgba(239,68,68,.50);
+    }
+    .btn-blue{
+      background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 45%, #0369a1 100%);
+      --glow: rgba(14,165,233,.55);
+    }
 
     /* Badge container used inside main buttons */
     .badge{
@@ -503,7 +467,8 @@
       </div>
 
       <div class="space-y-4 w-full max-w-xs mb-10">
-        <button onclick="showScreen('map-screen')" class="cart-btn btn-play glow main-btn"> aria-label="Play" data-icon="play">
+        <!-- ✅ FIXED: correct button tag + attributes + BIG + GREEN + GLOW -->
+        <button onclick="showScreen('map-screen')" class="cart-btn btn-play glow main-btn" aria-label="Play" data-icon="play">
           <div class="row">
             <div class="badge">
               <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg>
@@ -512,7 +477,8 @@
           </div>
         </button>
 
-        <button onclick="showScreen('shop-screen')" class="cart-btn btn-orange" aria-label="Shop" data-icon="shop">
+        <!-- ✅ SHOP is now yellow-orange -->
+        <button onclick="showScreen('shop-screen')" class="cart-btn btn-shop" aria-label="Shop" data-icon="shop">
           <div class="row">
             <div class="badge">
               <svg class="svg" viewBox="0 0 24 24">
@@ -530,7 +496,6 @@
       <!-- COINS & LIVES -->
       <div class="flex gap-4 text-center">
         <div class="pill flex items-center gap-3 px-6 py-3">
-          <!-- coin icon (image) + SVG fallback -->
           <img class="ui-icon hud-icon" data-static-icon="coin" alt="Coins">
           <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24">
             <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
@@ -541,7 +506,6 @@
         </div>
 
         <div class="pill flex items-center gap-3 px-6 py-3">
-          <!-- heart icon (image) + SVG fallback -->
           <img class="ui-icon hud-icon" data-static-icon="heart" alt="Lives">
           <svg class="svg svg-fill hidden" data-fallback="heart" viewBox="0 0 24 24">
             <path d="M12 21s-7-4.6-9.3-8.8C.9 8.6 3.1 6 6 6c1.7 0 3.1.9 4 2.1C10.9 6.9 12.3 6 14 6c2.9 0 5.1 2.6 3.3 6.2C19 16.4 12 21 12 21z"/>
@@ -1115,10 +1079,6 @@
     // Put images in: ui-icons/
     // Buttons use data-icon -> ui-icons/<name>.png
     // Non-button icons use data-static-icon -> ui-icons/<name>.png
-    // Suggested files:
-    // coin.png, heart.png, bio.png, recycle.png, residual.png, hazard.png
-    // star.png, timer.png, streak.png
-    // play.png, shop.png, back.png, pause.png, hint.png, shield.png, vacuum.png, freeze.png
     // =========================================================
     const UI_ICON_FOLDER = "ui-icons";
 
@@ -1166,7 +1126,6 @@
         const name = img.getAttribute("data-static-icon");
         img.src = getUiIconSrc(name);
 
-        // show SVG fallback if icon not found
         img.onerror = () => {
           img.classList.add("hidden");
           const fallback = img.parentElement?.querySelector(`svg[data-fallback="${name}"]`);
