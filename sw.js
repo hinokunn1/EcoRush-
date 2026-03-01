@@ -1,27 +1,27 @@
-const CACHE_NAME = 'ecorush-v1';
+const CACHE_NAME = 'ecorush-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icons-web/icon-192.png',
-  '/icons-web/icon-512.png',
-  '/background-ui/home.png',
-  '/background-ui/map.png',
-  '/background-ui/title.png',
-  '/background-ui/game-easy.png',
-  '/background-ui/game-normal.png',
-  '/background-ui/game-hard.png',
-  '/background-ui/game-extreme.png',
-  '/ui-icons/heart.png',
-  '/ui-icons/coin.png',
-  '/ui-icons/play.png',
-  '/sounds/bgm.mp3',
-  '/sounds/click.mp3',
-  '/sounds/correct.mp3',
-  '/sounds/wrong.mp3',
-  '/sounds/win.mp3',
-  '/sounds/lose.mp3',
-  '/sounds/buy.mp3'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icons-web/icon-192.png',
+  './icons-web/icon-512.png',
+  './background-ui/home.png',
+  './background-ui/map.png',
+  './background-ui/title.png',
+  './background-ui/game-easy.png',
+  './background-ui/game-normal.png',
+  './background-ui/game-hard.png',
+  './background-ui/game-extreme.png',
+  './ui-icons/heart.png',
+  './ui-icons/coin.png',
+  './ui-icons/play.png',
+  './sounds/bgm.mp3',
+  './sounds/click.mp3',
+  './sounds/correct.mp3',
+  './sounds/wrong.mp3',
+  './sounds/win.mp3',
+  './sounds/lose.mp3',
+  './sounds/buy.mp3'
 ];
 
 self.addEventListener('install', (event) => {
@@ -57,7 +57,12 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
           return response;
         })
-        .catch(() => caches.match('/index.html'));
+        .catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+          return Response.error();
+        });
     })
   );
 });
