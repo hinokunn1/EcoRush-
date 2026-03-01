@@ -1308,12 +1308,33 @@
       localStorage.setItem('ecoRushSave', JSON.stringify(gameState));
     }
 
+    // ✅ FIX: normalize stars after loading (prevents wrong star display)
+    function normalizeStars() {
+      if (!gameState.levelStars || typeof gameState.levelStars !== "object") gameState.levelStars = {};
+      Object.keys(gameState.levelStars).forEach(k => {
+        const n = Math.max(0, Math.min(3, Number(gameState.levelStars[k]) || 0));
+        gameState.levelStars[k] = n;
+      });
+
+      gameState.highestUnlocked = Math.max(1, Number(gameState.highestUnlocked) || 1);
+      gameState.coins = Math.max(0, Number(gameState.coins) || 0);
+
+      if (!gameState.boosts || typeof gameState.boosts !== "object") {
+        gameState.boosts = { hint: 0, shield: 0, vacuum: 0, freeze: 0 };
+      } else {
+        ["hint","shield","vacuum","freeze"].forEach(t => {
+          gameState.boosts[t] = Math.max(0, Number(gameState.boosts[t]) || 0);
+        });
+      }
+    }
+
     function loadGame() {
       const saved = localStorage.getItem('ecoRushSave');
       if (saved) {
         const parsed = JSON.parse(saved);
         gameState = { ...gameState, ...parsed };
       }
+      normalizeStars();
       updateAllCoinDisplays();
     }
 
@@ -1369,6 +1390,7 @@
       setTimeout(() => sparkle.remove(), 600);
     }
 
+    // ✅ FIX: stars displayed accurately on map (forces clean 0..3 number)
     function renderLevelMap() {
       const grid = document.getElementById('level-grid');
       grid.innerHTML = '';
@@ -1393,7 +1415,8 @@
         levelGrid.className = 'grid grid-cols-5 gap-2';
 
         for (let i = difficulty.range[0]; i <= difficulty.range[1]; i++) {
-          const stars = gameState.levelStars[i] || 0;
+          const starsRaw = gameState.levelStars?.[i];
+          const stars = Math.max(0, Math.min(3, Number(starsRaw) || 0)); // ✅ accurate
           const isUnlocked = i <= gameState.highestUnlocked;
 
           const node = document.createElement('button');
@@ -1933,6 +1956,9 @@
         gameState.coins += currentGame.coinsEarned;
         gameState.levelStars[currentGame.level] = Math.max(gameState.levelStars[currentGame.level] || 0, stars);
         gameState.highestUnlocked = Math.max(gameState.highestUnlocked, currentGame.level + 1);
+
+        // ✅ keep stars clean for saving + map display
+        normalizeStars();
 
         document.getElementById('result-emoji').textContent = stars === 3 ? '🏆' : stars === 2 ? '🎉' : '✅';
         document.getElementById('result-title').textContent = 'Level Complete!';
