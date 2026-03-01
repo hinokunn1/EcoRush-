@@ -9,18 +9,8 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 
   <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      box-sizing: border-box;
-    }
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      user-select: none;
-      margin: 0;
-      padding: 0;
-    }
+    * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; user-select: none; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&display=swap');
 
     body {
@@ -44,71 +34,93 @@
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.55));
+      background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.52));
       pointer-events:none;
       z-index:0;
     }
     .screen > *{ position:relative; z-index:1; }
 
     /* =========================
-       CARTOONY BUTTON SYSTEM
-       (inspired by your image)
+       MODERN CARTOONY UI SYSTEM
+       (cartoony but cleaner/modern)
        ========================= */
     :root{
-      --btn-orange-1:#ffc44d;
-      --btn-orange-2:#ff9b2f;
-      --btn-orange-3:#ff7a1a;
+      --ink:#1b1b1b;
+      --cream:#fff3d2;
 
-      --btn-green-1:#69f07a;
-      --btn-green-2:#2edb69;
-      --btn-green-3:#12b85a;
+      --glass: rgba(255,255,255,.14);
+      --glass2: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.14);
+      --strokeDark: rgba(0,0,0,.16);
 
-      --btn-red-1:#ff7a7a;
-      --btn-red-2:#ff4f5b;
-      --btn-red-3:#e83b45;
+      --shadow1: 0 10px 26px rgba(0,0,0,.28);
+      --shadow2: 0 6px 0 rgba(0,0,0,.16);
 
-      --btn-blue-1:#7ad6ff;
-      --btn-blue-2:#39b7ff;
-      --btn-blue-3:#0e9ce6;
+      --btn-green-1:#6AF08A;
+      --btn-green-2:#2EDB69;
+      --btn-green-3:#12B85A;
 
-      --btn-ink:#2b2b2b;
-      --btn-cream:#fff3d2;
+      --btn-orange-1:#FFD070;
+      --btn-orange-2:#FFAD3D;
+      --btn-orange-3:#FF7A1A;
+
+      --btn-red-1:#FF8A8A;
+      --btn-red-2:#FF5664;
+      --btn-red-3:#E83B45;
+
+      --btn-blue-1:#86DCFF;
+      --btn-blue-2:#3EBEFF;
+      --btn-blue-3:#0EA5E9;
     }
 
+    /* Modern cartoony button */
     .cart-btn{
       width: 100%;
       padding: 14px 16px;
-      border-radius: 16px;
+      border-radius: 18px;
       font-weight: 900;
       letter-spacing: .2px;
-      color: #2a1b00;
-      text-shadow: 0 1px 0 rgba(255,255,255,.35);
-      border: 2px solid rgba(0,0,0,.18);
-      box-shadow:
-        0 10px 0 rgba(0,0,0,.22),
-        0 18px 28px rgba(0,0,0,.35);
+      color: #201600;
+      text-shadow: 0 1px 0 rgba(255,255,255,.30);
+      border: 1.5px solid rgba(255,255,255,.22);
+      box-shadow: var(--shadow2), var(--shadow1);
       position: relative;
       overflow: hidden;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
       transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      backdrop-filter: blur(6px);
+    }
+    .cart-btn::after{
+      content:"";
+      position:absolute;
+      inset:-40% -60%;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.38), rgba(255,255,255,0) 55%);
+      transform: rotate(-10deg);
+      pointer-events:none;
+      opacity: .9;
     }
     .cart-btn::before{
       content:"";
       position:absolute;
-      inset: 3px 3px auto 3px;
-      height: 46%;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+      inset: 2.5px 2.5px auto 2.5px;
+      height: 44%;
+      border-radius: 15px;
+      background: linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,0));
       pointer-events:none;
-      opacity: .9;
+      opacity: .85;
     }
     .cart-btn:active{
-      transform: translateY(6px);
-      filter: brightness(.98) saturate(1.02);
-      box-shadow:
-        0 4px 0 rgba(0,0,0,.22),
-        0 10px 18px rgba(0,0,0,.28);
+      transform: translateY(5px) scale(.99);
+      filter: brightness(.99) saturate(1.02);
+      box-shadow: 0 3px 0 rgba(0,0,0,.14), 0 8px 18px rgba(0,0,0,.22);
     }
+    @media (hover:hover){
+      .cart-btn:hover{
+        transform: translateY(-1px);
+        filter: brightness(1.02);
+      }
+    }
+
     .cart-btn .row{
       display:flex;
       align-items:center;
@@ -117,40 +129,39 @@
       position: relative;
       z-index: 1;
     }
-    .badge{
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.25);
-      border: 2px solid rgba(0,0,0,.14);
-      box-shadow: inset 0 2px 0 rgba(255,255,255,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-    .btn-label{
-      font-size: 18px;
-      line-height: 1;
-    }
+    .btn-label{ font-size: 18px; line-height: 1; }
 
     .btn-green{ background: linear-gradient(180deg, var(--btn-green-1), var(--btn-green-2) 55%, var(--btn-green-3)); }
     .btn-orange{ background: linear-gradient(180deg, var(--btn-orange-1), var(--btn-orange-2) 55%, var(--btn-orange-3)); }
     .btn-red{ background: linear-gradient(180deg, var(--btn-red-1), var(--btn-red-2) 55%, var(--btn-red-3)); }
     .btn-blue{ background: linear-gradient(180deg, var(--btn-blue-1), var(--btn-blue-2) 55%, var(--btn-blue-3)); }
 
-    .icon-btn{
-      width: 46px;
-      height: 46px;
+    /* Badge container used inside main buttons */
+    .badge{
+      width: 42px;
+      height: 42px;
       border-radius: 16px;
+      background: rgba(255,255,255,.20);
+      border: 1.5px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.35);
       display:flex;
       align-items:center;
       justify-content:center;
-      border: 2px solid rgba(0,0,0,.18);
-      background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.12));
-      box-shadow:
-        0 8px 0 rgba(0,0,0,.22),
-        0 16px 24px rgba(0,0,0,.32);
+      overflow:hidden;
+    }
+
+    /* Icon-only button (modern cartoony) */
+    .icon-btn{
+      width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1.5px solid rgba(255,255,255,.22);
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.10));
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 0 rgba(0,0,0,.14), 0 14px 22px rgba(0,0,0,.26);
       transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
       overflow:hidden;
       position:relative;
@@ -159,20 +170,22 @@
       content:"";
       position:absolute;
       inset: 3px 3px auto 3px;
-      height: 46%;
-      border-radius: 14px;
+      height: 44%;
+      border-radius: 15px;
       background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
       pointer-events:none;
-      opacity: .9;
+      opacity: .85;
     }
     .icon-btn:active{
-      transform: translateY(5px);
-      box-shadow:
-        0 3px 0 rgba(0,0,0,.22),
-        0 10px 16px rgba(0,0,0,.26);
+      transform: translateY(4px) scale(.99);
+      box-shadow: 0 2px 0 rgba(0,0,0,.14), 0 9px 16px rgba(0,0,0,.22);
       filter: brightness(.99);
     }
+    @media (hover:hover){
+      .icon-btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    }
 
+    /* SVG fallback */
     .svg{
       width: 22px;
       height: 22px;
@@ -182,10 +195,7 @@
       position:relative;
       z-index:1;
     }
-    .svg-fill{
-      fill:#1f1f1f;
-      stroke:none;
-    }
+    .svg-fill{ fill:#1f1f1f; stroke:none; }
 
     /* UI ICON IMAGES (LOCAL) */
     .ui-icon{
@@ -194,10 +204,13 @@
       object-fit: contain;
       position: relative;
       z-index: 1;
-      filter: drop-shadow(0 2px 0 rgba(255,255,255,.25));
+      filter: drop-shadow(0 2px 0 rgba(255,255,255,.20));
     }
-    .badge .ui-icon { width: 24px; height: 24px; }
+    .badge .ui-icon { width: 26px; height: 26px; }
     .icon-btn .ui-icon { width: 22px; height: 22px; }
+
+    /* Slightly larger HUD icons */
+    .hud-icon { width: 24px; height: 24px; }
 
     /* HOME title float */
     @keyframes homeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -216,15 +229,13 @@
       pointer-events:none;
     }
 
-    /* HUD pills */
+    /* HUD pills (modern glass) */
     .pill{
       border-radius: 999px;
-      border: 2px solid rgba(0,0,0,.18);
-      background: rgba(255,255,255,.16);
-      backdrop-filter: blur(10px);
-      box-shadow:
-        0 8px 0 rgba(0,0,0,.20),
-        0 16px 24px rgba(0,0,0,.30);
+      border: 1.5px solid rgba(255,255,255,.20);
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.10));
+      backdrop-filter: blur(12px);
+      box-shadow: 0 5px 0 rgba(0,0,0,.14), 0 14px 22px rgba(0,0,0,.26);
     }
 
     /* ANIMATIONS */
@@ -245,8 +256,8 @@
       50% { transform: translateY(-15px); }
     }
     @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5), inset 0 0 20px rgba(34, 197, 94, 0.2); }
-      50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8), inset 0 0 30px rgba(34, 197, 94, 0.3); }
+      0%, 100% { box-shadow: 0 0 18px rgba(34, 197, 94, 0.45), inset 0 0 18px rgba(34, 197, 94, 0.16); }
+      50% { box-shadow: 0 0 34px rgba(34, 197, 94, 0.75), inset 0 0 26px rgba(34, 197, 94, 0.26); }
     }
     @keyframes slide-up {
       from { transform: translateY(100%); opacity: 0; }
@@ -254,7 +265,7 @@
     }
     @keyframes pop-in {
       0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-      70% { transform: scale(1.1); }
+      70% { transform: scale(1.06); }
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
     @keyframes bounce-in {
@@ -279,7 +290,7 @@
     .bin { transition: all 0.2s ease; position: relative; overflow: hidden; }
     .bin.highlight {
       transform: scale(1.08);
-      box-shadow: 0 0 30px rgba(255,255,255,0.6), inset 0 0 18px rgba(255,255,255,0.22);
+      box-shadow: 0 0 28px rgba(255,255,255,0.55), inset 0 0 16px rgba(255,255,255,0.20);
     }
     .bin.wrong { animation: shake 0.5s ease; }
 
@@ -317,18 +328,18 @@
     .contamination-bar {
       transition: all 0.3s ease;
       background: linear-gradient(90deg, #f59e0b, #ef4444, #991b1b);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 15px rgba(239, 68, 68, 0.4);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 15px rgba(239, 68, 68, 0.35);
     }
 
     .level-node { transition: all 0.2s ease; border-radius: 16px; position: relative; overflow: hidden; }
     .level-node:not(.locked) { cursor: pointer; }
-    .level-node:not(.locked):active { transform: translateY(5px); }
+    .level-node:not(.locked):active { transform: translateY(4px) scale(.99); }
     .level-node.locked { filter: grayscale(1) brightness(0.5); opacity: 0.7; }
     .level-node::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,255,255,0.28) 0%, transparent 70%);
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -347,7 +358,7 @@
 
     .boost-btn { transition: transform .12s ease, filter .12s ease, box-shadow .12s ease; }
     .boost-btn:not(:disabled) { cursor: pointer; }
-    .boost-btn:not(:disabled):active { transform: translateY(5px); filter: brightness(.98); }
+    .boost-btn:not(:disabled):active { transform: translateY(4px) scale(.99); filter: brightness(.99); }
     .boost-btn:disabled { opacity: 0.4; filter: grayscale(0.7); }
 
     .clean-overlay { animation: pulse 0.8s infinite; background: linear-gradient(135deg, rgba(202, 138, 4, 0.9), rgba(177, 98, 0, 0.9)); }
@@ -375,7 +386,6 @@
         <button onclick="showScreen('map-screen')" class="cart-btn btn-green" aria-label="Play" data-icon="play">
           <div class="row">
             <div class="badge">
-              <!-- SVG fallback -->
               <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg>
             </div>
             <span class="btn-label">Play</span>
@@ -385,7 +395,6 @@
         <button onclick="showScreen('shop-screen')" class="cart-btn btn-orange" aria-label="Shop" data-icon="shop">
           <div class="row">
             <div class="badge">
-              <!-- SVG fallback -->
               <svg class="svg" viewBox="0 0 24 24">
                 <path d="M6 7h15l-1.5 9H7.2L6 7z"/>
                 <path d="M6 7l-2-3H2"/>
@@ -401,15 +410,20 @@
       <!-- COINS & LIVES -->
       <div class="flex gap-4 text-center">
         <div class="pill flex items-center gap-3 px-6 py-3">
-          <svg class="svg" viewBox="0 0 24 24">
+          <!-- coin icon (image) + SVG fallback -->
+          <img class="ui-icon hud-icon" data-static-icon="coin" alt="Coins">
+          <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24">
             <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
             <path d="M8.5 12h7"></path>
             <path d="M12 8.5v7"></path>
           </svg>
           <span id="home-coins" class="text-2xl font-black text-white drop-shadow">0</span>
         </div>
+
         <div class="pill flex items-center gap-3 px-6 py-3">
-          <svg class="svg svg-fill" viewBox="0 0 24 24">
+          <!-- heart icon (image) + SVG fallback -->
+          <img class="ui-icon hud-icon" data-static-icon="heart" alt="Lives">
+          <svg class="svg svg-fill hidden" data-fallback="heart" viewBox="0 0 24 24">
             <path d="M12 21s-7-4.6-9.3-8.8C.9 8.6 3.1 6 6 6c1.7 0 3.1.9 4 2.1C10.9 6.9 12.3 6 14 6c2.9 0 5.1 2.6 3.3 6.2C19 16.4 12 21 12 21z"/>
           </svg>
           <span id="home-lives" class="text-2xl font-black text-white drop-shadow">5</span>
@@ -437,7 +451,8 @@
       </div>
 
       <div class="pill flex items-center gap-2 px-4 py-2 mb-4 self-center">
-        <svg class="svg" viewBox="0 0 24 24">
+        <img class="ui-icon hud-icon" data-static-icon="coin" alt="Coins">
+        <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24">
           <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
           <path d="M8.5 12h7"></path>
           <path d="M12 8.5v7"></path>
@@ -460,7 +475,8 @@
       </div>
 
       <div class="pill flex items-center gap-2 px-4 py-2 mb-4 self-center">
-        <svg class="svg" viewBox="0 0 24 24">
+        <img class="ui-icon hud-icon" data-static-icon="coin" alt="Coins">
+        <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24">
           <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
           <path d="M8.5 12h7"></path>
           <path d="M12 8.5v7"></path>
@@ -481,7 +497,8 @@
             <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
                 <div class="badge" style="background: rgba(255,255,255,.18);">
-                  <svg class="svg" viewBox="0 0 24 24">
+                  <img class="ui-icon" data-static-icon="hint" alt="Hint">
+                  <svg class="svg hidden" data-fallback="hint" viewBox="0 0 24 24">
                     <path d="M9 18h6"/>
                     <path d="M10 22h4"/>
                     <path d="M12 2a7 7 0 00-4 12c.7.6 1 1.3 1 2h6c0-.7.3-1.4 1-2a7 7 0 00-4-12z"/>
@@ -492,10 +509,11 @@
                   <p class="text-xs text-emerald-200">Shows correct bin</p>
                 </div>
               </div>
-              <button onclick="buyBoost('hint')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+              <button onclick="buyBoost('hint')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:16px;">
                 <div class="row" style="gap:8px;">
                   <span class="btn-label" style="font-size:14px;">50</span>
-                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                  <img class="ui-icon" data-static-icon="coin" alt="Coins" style="width:18px;height:18px;">
+                  <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24" style="width:18px;height:18px;">
                     <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
                     <path d="M8.5 12h7"></path>
                     <path d="M12 8.5v7"></path>
@@ -507,7 +525,8 @@
             <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
                 <div class="badge" style="background: rgba(255,255,255,.18);">
-                  <svg class="svg" viewBox="0 0 24 24">
+                  <img class="ui-icon" data-static-icon="shield" alt="Shield">
+                  <svg class="svg hidden" data-fallback="shield" viewBox="0 0 24 24">
                     <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z"/>
                   </svg>
                 </div>
@@ -516,10 +535,11 @@
                   <p class="text-xs text-emerald-200">Blocks next penalty</p>
                 </div>
               </div>
-              <button onclick="buyBoost('shield')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+              <button onclick="buyBoost('shield')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:16px;">
                 <div class="row" style="gap:8px;">
                   <span class="btn-label" style="font-size:14px;">80</span>
-                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                  <img class="ui-icon" data-static-icon="coin" alt="Coins" style="width:18px;height:18px;">
+                  <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24" style="width:18px;height:18px;">
                     <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
                     <path d="M8.5 12h7"></path>
                     <path d="M12 8.5v7"></path>
@@ -531,7 +551,8 @@
             <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
                 <div class="badge" style="background: rgba(255,255,255,.18);">
-                  <svg class="svg" viewBox="0 0 24 24">
+                  <img class="ui-icon" data-static-icon="vacuum" alt="Vacuum">
+                  <svg class="svg hidden" data-fallback="vacuum" viewBox="0 0 24 24">
                     <path d="M3 12h10"/>
                     <path d="M13 12l-3-3"/>
                     <path d="M13 12l-3 3"/>
@@ -543,10 +564,11 @@
                   <p class="text-xs text-emerald-200">Auto-sorts 1 item</p>
                 </div>
               </div>
-              <button onclick="buyBoost('vacuum')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+              <button onclick="buyBoost('vacuum')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:16px;">
                 <div class="row" style="gap:8px;">
                   <span class="btn-label" style="font-size:14px;">120</span>
-                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                  <img class="ui-icon" data-static-icon="coin" alt="Coins" style="width:18px;height:18px;">
+                  <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24" style="width:18px;height:18px;">
                     <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
                     <path d="M8.5 12h7"></path>
                     <path d="M12 8.5v7"></path>
@@ -558,7 +580,8 @@
             <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/10">
               <div class="flex items-center gap-3">
                 <div class="badge" style="background: rgba(255,255,255,.18);">
-                  <svg class="svg" viewBox="0 0 24 24">
+                  <img class="ui-icon" data-static-icon="freeze" alt="Freeze">
+                  <svg class="svg hidden" data-fallback="freeze" viewBox="0 0 24 24">
                     <path d="M12 2v20"/>
                     <path d="M5 7h14"/>
                     <path d="M7 12h10"/>
@@ -570,10 +593,11 @@
                   <p class="text-xs text-emerald-200">Stops timer 5s</p>
                 </div>
               </div>
-              <button onclick="buyBoost('freeze')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:14px;">
+              <button onclick="buyBoost('freeze')" class="cart-btn btn-orange" style="width:auto; padding:10px 12px; border-radius:16px;">
                 <div class="row" style="gap:8px;">
                   <span class="btn-label" style="font-size:14px;">100</span>
-                  <svg class="svg" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                  <img class="ui-icon" data-static-icon="coin" alt="Coins" style="width:18px;height:18px;">
+                  <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24" style="width:18px;height:18px;">
                     <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
                     <path d="M8.5 12h7"></path>
                     <path d="M12 8.5v7"></path>
@@ -601,14 +625,16 @@
 
         <div class="flex items-center gap-4">
           <div class="pill flex items-center gap-2 px-3 py-2">
-            <svg class="svg svg-fill" viewBox="0 0 24 24">
+            <img class="ui-icon" data-static-icon="star" alt="Score">
+            <svg class="svg svg-fill hidden" data-fallback="star" viewBox="0 0 24 24">
               <path d="M12 2l2.7 6.7 7.3.6-5.6 4.6 1.8 7.1-6.2-3.8-6.2 3.8 1.8-7.1L2 9.3l7.3-.6L12 2z"/>
             </svg>
             <span id="game-score" class="font-black text-white">0</span>
           </div>
 
           <div id="timer-display" class="pill flex items-center gap-2 px-3 py-2 hidden">
-            <svg class="svg" viewBox="0 0 24 24">
+            <img class="ui-icon" data-static-icon="timer" alt="Timer">
+            <svg class="svg hidden" data-fallback="timer" viewBox="0 0 24 24">
               <path d="M12 7v6l3 2"></path>
               <path d="M9 2h6"></path>
               <path d="M12 22a9 9 0 100-18 9 9 0 000 18z"></path>
@@ -618,7 +644,8 @@
         </div>
 
         <div class="pill flex items-center gap-2 px-3 py-2">
-          <svg class="svg" viewBox="0 0 24 24">
+          <img class="ui-icon" data-static-icon="coin" alt="Coins">
+          <svg class="svg hidden" data-fallback="coin" viewBox="0 0 24 24">
             <ellipse cx="12" cy="12" rx="8" ry="8"></ellipse>
             <path d="M8.5 12h7"></path>
             <path d="M12 8.5v7"></path>
@@ -635,7 +662,8 @@
         </div>
 
         <div id="streak-display" class="pill flex items-center gap-2 px-3 py-2 hidden">
-          <svg class="svg svg-fill" viewBox="0 0 24 24">
+          <img class="ui-icon" data-static-icon="streak" alt="Streak">
+          <svg class="svg svg-fill hidden" data-fallback="streak" viewBox="0 0 24 24">
             <path d="M13 2s2 3 2 6-2 5-2 5 1-3-2-5-1-6-1-6 0 3-3 6c-3 3-2 8 2 11 1 .7 2 .9 3 1 6 0 10-6 7-12-2-4-6-6-6-6z"/>
           </svg>
           <span id="streak-count" class="text-sm font-black text-white">x1</span>
@@ -701,7 +729,8 @@
       <div class="flex-1 flex flex-col justify-between p-3 min-h-0">
         <div id="bins-container" class="grid grid-cols-4 gap-2 mb-3">
           <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-green-600/85 border border-white/10" data-bin="biodegradable">
-            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+            <img class="ui-icon" data-static-icon="bio" alt="Bio" style="filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));">
+            <svg class="svg hidden" data-fallback="bio" viewBox="0 0 24 24" style="stroke:white;">
               <path d="M20 4s-6 0-10 4-4 10-4 10 6 0 10-4 4-10 4-10z"/>
               <path d="M10 14c3-1 6-4 7-7"/>
             </svg>
@@ -709,7 +738,8 @@
           </div>
 
           <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-blue-600/85 border border-white/10" data-bin="recyclable">
-            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+            <img class="ui-icon" data-static-icon="recycle" alt="Recycle" style="filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));">
+            <svg class="svg hidden" data-fallback="recycle" viewBox="0 0 24 24" style="stroke:white;">
               <path d="M7 7l2-4 4 2"/>
               <path d="M9 3l-2 4 3 3"/>
               <path d="M17 7l-2-4-4 2"/>
@@ -723,7 +753,8 @@
           </div>
 
           <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-gray-600/85 border border-white/10" data-bin="residual">
-            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+            <img class="ui-icon" data-static-icon="residual" alt="Residual" style="filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));">
+            <svg class="svg hidden" data-fallback="residual" viewBox="0 0 24 24" style="stroke:white;">
               <path d="M4 7h16"/>
               <path d="M7 7l1 14h8l1-14"/>
               <path d="M9 7V4h6v3"/>
@@ -732,7 +763,8 @@
           </div>
 
           <div class="bin flex flex-col items-center p-2 rounded-2xl shadow-lg bg-red-600/85 border border-white/10" data-bin="hazardous">
-            <svg class="svg" viewBox="0 0 24 24" style="stroke:white;">
+            <img class="ui-icon" data-static-icon="hazard" alt="Hazard" style="filter: drop-shadow(0 2px 0 rgba(0,0,0,.18));">
+            <svg class="svg hidden" data-fallback="hazard" viewBox="0 0 24 24" style="stroke:white;">
               <path d="M12 2l10 18H2L12 2z"/>
               <path d="M12 9v4"/>
               <path d="M12 17h.01"/>
@@ -802,7 +834,8 @@
     // =========================================================
     // 🔊 LOW-LATENCY SFX (STACKABLE) + 🎵 BGM (ALWAYS ON)
     // Put audio files in: /sounds/
-    // Put UI icons in: /ui-icons/ (e.g. play.png, shop.png, back.png, pause.png)
+    // Put UI icons in: /ui-icons/
+    // Also supports "static icons" in non-buttons via data-static-icon
     // =========================================================
     const SFX = {
       click:   "sounds/click.mp3",
@@ -848,7 +881,6 @@
       masterGain.gain.value = 0.9;
       masterGain.connect(audioCtx.destination);
 
-      // Preload + decode all SFX into RAM
       const entries = Object.entries(SFX);
       await Promise.all(entries.map(async ([name, url]) => {
         try {
@@ -865,7 +897,6 @@
     function playSfx(name, vol = 0.85) {
       if (!sfxEnabled) return;
 
-      // WebAudio path (instant, stackable)
       if (audioCtx && sfxBuffers[name]) {
         try {
           const src = audioCtx.createBufferSource();
@@ -882,7 +913,6 @@
         return;
       }
 
-      // Fallback path (rare)
       try {
         const a = new Audio(SFX[name]);
         a.preload = "auto";
@@ -895,12 +925,10 @@
       if (audioUnlocked) return;
       audioUnlocked = true;
 
-      // Resume/initialize WebAudio
       try {
         await initWebAudio();
         if (audioCtx.state === "suspended") await audioCtx.resume();
 
-        // tiny silent ping
         const buf = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
         const src = audioCtx.createBufferSource();
         src.buffer = buf;
@@ -908,23 +936,19 @@
         src.start(0);
       } catch (e) {}
 
-      // Start BGM after unlock (always on)
       initBgm();
       if (bgmAudio) bgmAudio.play().catch(() => {});
     }
 
-    // One-time user gesture unlock
     window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
     window.addEventListener("touchstart", unlockAudioOnce, { once: true, passive: true });
 
-    // Click sound for ANY button + keep retrying BGM start
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (btn && !btn.disabled) playSfx("click", 0.75);
       playBgm();
     });
 
-    // Try early (won't actually play until gesture)
     initBgm();
     playBgm();
 
@@ -967,10 +991,14 @@
     }
 
     // =========================================================
-    // 🖼️ UI ICONS (LOCAL) — Put images in: ui-icons/
-    // Example files:
-    // ui-icons/play.png, ui-icons/shop.png, ui-icons/back.png, ui-icons/pause.png
-    // ui-icons/hint.png, ui-icons/shield.png, ui-icons/vacuum.png, ui-icons/freeze.png
+    // 🖼️ UI ICONS (LOCAL)
+    // Put images in: ui-icons/
+    // Buttons use data-icon -> ui-icons/<name>.png
+    // Non-button icons use data-static-icon -> ui-icons/<name>.png
+    // Suggested files:
+    // coin.png, heart.png, bio.png, recycle.png, residual.png, hazard.png
+    // star.png, timer.png, streak.png
+    // play.png, shop.png, back.png, pause.png, hint.png, shield.png, vacuum.png, freeze.png
     // =========================================================
     const UI_ICON_FOLDER = "ui-icons";
 
@@ -1010,6 +1038,26 @@
       document.querySelectorAll("button[data-icon]").forEach(btn => {
         const icon = btn.getAttribute("data-icon");
         setButtonIcon(btn, icon, icon);
+      });
+    }
+
+    function applyStaticIcons(){
+      document.querySelectorAll("img[data-static-icon]").forEach(img => {
+        const name = img.getAttribute("data-static-icon");
+        img.src = getUiIconSrc(name);
+
+        // show SVG fallback if icon not found
+        img.onerror = () => {
+          img.classList.add("hidden");
+          const fallback = img.parentElement?.querySelector(`svg[data-fallback="${name}"]`);
+          if (fallback) fallback.classList.remove("hidden");
+        };
+
+        img.onload = () => {
+          const fallback = img.parentElement?.querySelector(`svg[data-fallback="${name}"]`);
+          if (fallback) fallback.classList.add("hidden");
+          img.classList.remove("hidden");
+        };
       });
     }
 
@@ -1258,7 +1306,7 @@
           node.className = `level-node aspect-square rounded-xl flex flex-col items-center justify-center text-sm ${
             isUnlocked ? `bg-gradient-to-br ${difficulty.color} border border-white/10` : 'bg-gray-600 locked'
           }`;
-          node.style.boxShadow = isUnlocked ? '0 10px 0 rgba(0,0,0,.22), 0 18px 24px rgba(0,0,0,.32)' : '';
+          node.style.boxShadow = isUnlocked ? '0 5px 0 rgba(0,0,0,.14), 0 14px 22px rgba(0,0,0,.26)' : '';
 
           if (isUnlocked) node.onclick = () => startLevel(i);
 
@@ -1350,15 +1398,10 @@
         const timerEl = document.getElementById('game-timer');
         timerEl.textContent = currentGame.timer;
 
-        if (currentGame.timer <= 5 && currentGame.config.timerType !== 'none') {
-          timerEl.classList.add('timer-critical');
-        } else {
-          timerEl.classList.remove('timer-critical');
-        }
+        if (currentGame.timer <= 5 && currentGame.config.timerType !== 'none') timerEl.classList.add('timer-critical');
+        else timerEl.classList.remove('timer-critical');
 
-        if (currentGame.timer <= 0 && currentGame.config.timerType === 'hard') {
-          endGame(false, 'Time ran out!');
-        }
+        if (currentGame.timer <= 0 && currentGame.config.timerType === 'hard') endGame(false, 'Time ran out!');
       }, 1000);
     }
 
@@ -1404,8 +1447,7 @@
 
     function getRandomItem(category) {
       const items = TRASH_DATABASE[category];
-      const item = { ...items[Math.floor(Math.random() * items.length)], category };
-      return item;
+      return { ...items[Math.floor(Math.random() * items.length)], category };
     }
 
     // =========================================================
@@ -1505,13 +1547,9 @@
       name.textContent = item.name;
       card.appendChild(name);
 
-      if (needsClean) {
-        card.onclick = (ev) => { ev.stopPropagation(); cleanItem(item.id); };
-      } else {
-        card.onclick = null;
-      }
+      if (needsClean) card.onclick = (ev) => { ev.stopPropagation(); cleanItem(item.id); };
+      else card.onclick = null;
 
-      // pointer down drag (only if clean)
       card.onpointerdown = (e) => {
         if (currentGame.isPaused) return;
         if (item.needsCleaning && !item.isCleaned) return;
@@ -1771,8 +1809,7 @@
     function useFreeze() {
       currentGame.isFreezed = true;
       showToast('Time frozen!');
-
-      document.getElementById('game-screen').style.boxShadow = 'inset 0 0 100px rgba(59, 130, 246, 0.5)';
+      document.getElementById('game-screen').style.boxShadow = 'inset 0 0 90px rgba(59, 130, 246, 0.45)';
 
       setTimeout(() => {
         currentGame.isFreezed = false;
@@ -1917,8 +1954,9 @@
 
     updateAllCoinDisplays();
 
-    // ✅ Apply local UI icons (auto) from ui-icons/<data-icon>.png
+    // ✅ Apply local UI icons
     applyAllUiIcons();
+    applyStaticIcons();
 
     // ✅ Ensure BGM attempts early (will succeed after gesture)
     initBgm();
