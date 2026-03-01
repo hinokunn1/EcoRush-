@@ -127,6 +127,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      overflow:hidden;
     }
     .btn-label{
       font-size: 18px;
@@ -185,6 +186,18 @@
       fill:#1f1f1f;
       stroke:none;
     }
+
+    /* UI ICON IMAGES (LOCAL) */
+    .ui-icon{
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 2px 0 rgba(255,255,255,.25));
+    }
+    .badge .ui-icon { width: 24px; height: 24px; }
+    .icon-btn .ui-icon { width: 22px; height: 22px; }
 
     /* HOME title float */
     @keyframes homeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -359,18 +372,20 @@
       </div>
 
       <div class="space-y-4 w-full max-w-xs mb-10">
-        <button onclick="showScreen('map-screen')" class="cart-btn btn-green" aria-label="Play">
+        <button onclick="showScreen('map-screen')" class="cart-btn btn-green" aria-label="Play" data-icon="play">
           <div class="row">
             <div class="badge">
+              <!-- SVG fallback -->
               <svg class="svg svg-fill" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg>
             </div>
             <span class="btn-label">Play</span>
           </div>
         </button>
 
-        <button onclick="showScreen('shop-screen')" class="cart-btn btn-orange" aria-label="Shop">
+        <button onclick="showScreen('shop-screen')" class="cart-btn btn-orange" aria-label="Shop" data-icon="shop">
           <div class="row">
             <div class="badge">
+              <!-- SVG fallback -->
               <svg class="svg" viewBox="0 0 24 24">
                 <path d="M6 7h15l-1.5 9H7.2L6 7z"/>
                 <path d="M6 7l-2-3H2"/>
@@ -405,13 +420,13 @@
     <!-- MAP SCREEN -->
     <div id="map-screen" class="screen bg-map flex-col p-4">
       <div class="flex items-center justify-between mb-4">
-        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back">
+        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back" data-icon="back">
           <svg class="svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
 
         <h2 class="text-xl font-black text-white drop-shadow">Select Level</h2>
 
-        <button onclick="showScreen('shop-screen')" class="icon-btn" aria-label="Shop">
+        <button onclick="showScreen('shop-screen')" class="icon-btn" aria-label="Shop" data-icon="shop">
           <svg class="svg" viewBox="0 0 24 24">
             <path d="M6 7h15l-1.5 9H7.2L6 7z"/>
             <path d="M6 7l-2-3H2"/>
@@ -436,7 +451,7 @@
     <!-- SHOP SCREEN -->
     <div id="shop-screen" class="screen bg-shop flex-col p-4">
       <div class="flex items-center justify-between mb-4">
-        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back">
+        <button onclick="showScreen('home-screen')" class="icon-btn" aria-label="Back" data-icon="back">
           <svg class="svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
 
@@ -577,7 +592,7 @@
 
       <!-- Top HUD -->
       <div class="bg-black/30 p-3 flex items-center justify-between backdrop-blur-sm">
-        <button onclick="pauseGame()" class="icon-btn" aria-label="Pause">
+        <button onclick="pauseGame()" class="icon-btn" aria-label="Pause" data-icon="pause">
           <svg class="svg" viewBox="0 0 24 24">
             <path d="M7 5v14"></path>
             <path d="M17 5v14"></path>
@@ -645,7 +660,7 @@
 
       <!-- Boosts Bar -->
       <div class="flex justify-center gap-2 px-3 py-2 bg-black/10">
-        <button id="boost-hint" onclick="useBoost('hint')" class="icon-btn boost-btn" disabled aria-label="Hint">
+        <button id="boost-hint" onclick="useBoost('hint')" class="icon-btn boost-btn" disabled aria-label="Hint" data-icon="hint">
           <svg class="svg" viewBox="0 0 24 24">
             <path d="M9 18h6"/>
             <path d="M10 22h4"/>
@@ -654,12 +669,12 @@
           <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="hint-count">0</span>
         </button>
 
-        <button id="boost-shield" onclick="useBoost('shield')" class="icon-btn boost-btn" disabled aria-label="Shield">
+        <button id="boost-shield" onclick="useBoost('shield')" class="icon-btn boost-btn" disabled aria-label="Shield" data-icon="shield">
           <svg class="svg" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z"/></svg>
           <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="shield-count">0</span>
         </button>
 
-        <button id="boost-vacuum" onclick="useBoost('vacuum')" class="icon-btn boost-btn" disabled aria-label="Vacuum">
+        <button id="boost-vacuum" onclick="useBoost('vacuum')" class="icon-btn boost-btn" disabled aria-label="Vacuum" data-icon="vacuum">
           <svg class="svg" viewBox="0 0 24 24">
             <path d="M3 12h10"/>
             <path d="M13 12l-3-3"/>
@@ -669,7 +684,7 @@
           <span class="absolute bottom-1 right-1 text-[11px] font-black text-white/95" id="vacuum-count">0</span>
         </button>
 
-        <button id="boost-freeze" onclick="useBoost('freeze')" class="icon-btn boost-btn" disabled aria-label="Freeze">
+        <button id="boost-freeze" onclick="useBoost('freeze')" class="icon-btn boost-btn" disabled aria-label="Freeze" data-icon="freeze">
           <svg class="svg" viewBox="0 0 24 24">
             <path d="M12 2v20"/>
             <path d="M5 7h14"/>
@@ -785,8 +800,9 @@
 
   <script>
     // =========================================================
-    // 🔊 SOUND EFFECTS (LOCAL FILES) + 🎵 BGM (ALWAYS ON)
+    // 🔊 LOW-LATENCY SFX (STACKABLE) + 🎵 BGM (ALWAYS ON)
     // Put audio files in: /sounds/
+    // Put UI icons in: /ui-icons/ (e.g. play.png, shop.png, back.png, pause.png)
     // =========================================================
     const SFX = {
       click:   "sounds/click.mp3",
@@ -798,25 +814,17 @@
       buy:     "sounds/buy.mp3"
     };
 
-    const BGM_SRC = "sounds/bgm.mp3";  // ✅ REQUIRED: background music always
-
+    const BGM_SRC = "sounds/bgm.mp3"; // required
     let sfxEnabled = true;
+
+    // ---- WebAudio (fast + overlapping) ----
     let audioUnlocked = false;
-    const audioPool = {};
+    let audioCtx = null;
+    let masterGain = null;
+    const sfxBuffers = {}; // name -> AudioBuffer
 
-    // BGM
+    // ---- BGM (<audio>, loop) ----
     let bgmAudio = null;
-
-    function initSfxPool() {
-      Object.entries(SFX).forEach(([key, src]) => {
-        audioPool[key] = Array.from({ length: 4 }, () => {
-          const a = new Audio(src);
-          a.preload = "auto";
-          a.volume = 0.85;
-          return a;
-        });
-      });
-    }
 
     function initBgm() {
       if (bgmAudio) return;
@@ -827,77 +835,101 @@
     }
 
     function playBgm() {
-      // Autoplay is blocked until a user gesture; we start on first touch/click.
       initBgm();
       if (!bgmAudio) return;
       if (!bgmAudio.paused) return;
       bgmAudio.play().catch(() => {});
     }
 
+    async function initWebAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.9;
+      masterGain.connect(audioCtx.destination);
+
+      // Preload + decode all SFX into RAM
+      const entries = Object.entries(SFX);
+      await Promise.all(entries.map(async ([name, url]) => {
+        try {
+          const res = await fetch(url, { cache: "force-cache" });
+          const arr = await res.arrayBuffer();
+          const buf = await audioCtx.decodeAudioData(arr);
+          sfxBuffers[name] = buf;
+        } catch (e) {
+          console.warn("SFX load failed:", name, url);
+        }
+      }));
+    }
+
     function playSfx(name, vol = 0.85) {
       if (!sfxEnabled) return;
-      const pool = audioPool[name];
-      if (!pool) return;
 
-      const a = pool.find(x => x.paused || x.ended) || pool[0];
+      // WebAudio path (instant, stackable)
+      if (audioCtx && sfxBuffers[name]) {
+        try {
+          const src = audioCtx.createBufferSource();
+          src.buffer = sfxBuffers[name];
+
+          const g = audioCtx.createGain();
+          g.gain.value = Math.max(0, Math.min(1, vol));
+
+          src.connect(g);
+          g.connect(masterGain);
+
+          src.start(0);
+        } catch (e) {}
+        return;
+      }
+
+      // Fallback path (rare)
       try {
+        const a = new Audio(SFX[name]);
+        a.preload = "auto";
         a.volume = vol;
-        a.currentTime = 0;
         a.play().catch(() => {});
       } catch (e) {}
     }
 
-    function unlockAudioOnce() {
+    async function unlockAudioOnce() {
       if (audioUnlocked) return;
       audioUnlocked = true;
 
+      // Resume/initialize WebAudio
       try {
-        // unlock SFX
-        const a = audioPool.click?.[0];
-        if (a) {
-          a.volume = 0.001;
-          a.currentTime = 0;
-          a.play().then(() => {
-            a.pause();
-            a.currentTime = 0;
-            a.volume = 0.85;
-          }).catch(() => {});
-        }
+        await initWebAudio();
+        if (audioCtx.state === "suspended") await audioCtx.resume();
 
-        // unlock BGM then start it (ALWAYS)
-        initBgm();
-        if (bgmAudio) {
-          bgmAudio.volume = 0.001;
-          bgmAudio.currentTime = 0;
-          bgmAudio.play().then(() => {
-            bgmAudio.pause();
-            bgmAudio.currentTime = 0;
-            bgmAudio.volume = 0.35;
-            playBgm(); // ✅ start after unlock
-          }).catch(() => {
-            // if still blocked, we will try on subsequent clicks anyway
-          });
-        }
+        // tiny silent ping
+        const buf = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.connect(masterGain);
+        src.start(0);
       } catch (e) {}
+
+      // Start BGM after unlock (always on)
+      initBgm();
+      if (bgmAudio) bgmAudio.play().catch(() => {});
     }
 
-    initSfxPool();
+    // One-time user gesture unlock
     window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
     window.addEventListener("touchstart", unlockAudioOnce, { once: true, passive: true });
 
-    // Click sound for ANY button + also retry BGM start
+    // Click sound for ANY button + keep retrying BGM start
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (btn && !btn.disabled) playSfx("click", 0.75);
-      // ensure BGM keeps trying until browser allows it
       playBgm();
     });
 
+    // Try early (won't actually play until gesture)
+    initBgm();
+    playBgm();
+
     // =========================================================
-    // ✅ TRASH ICONS
-    // - Put images in: trash-icons/
-    // - "Banana Peel" -> trash-icons/banana-peel.png
-    // - If icon not found, fallback to Twemoji, then emoji text
+    // ✅ TRASH ICONS (LOCAL) + FALLBACK
     // =========================================================
     const TRASH_ICON_FOLDER = "trash-icons";
 
@@ -932,6 +964,53 @@
       const gameScreen = document.getElementById("game-screen");
       gameScreen.classList.remove("bg-game-easy","bg-game-normal","bg-game-hard","bg-game-extreme");
       gameScreen.classList.add(`bg-game-${getDifficultyName(level)}`);
+    }
+
+    // =========================================================
+    // 🖼️ UI ICONS (LOCAL) — Put images in: ui-icons/
+    // Example files:
+    // ui-icons/play.png, ui-icons/shop.png, ui-icons/back.png, ui-icons/pause.png
+    // ui-icons/hint.png, ui-icons/shield.png, ui-icons/vacuum.png, ui-icons/freeze.png
+    // =========================================================
+    const UI_ICON_FOLDER = "ui-icons";
+
+    function getUiIconSrc(name) {
+      return `${UI_ICON_FOLDER}/${slugify(name)}.png`;
+    }
+
+    function setButtonIcon(btn, iconName, altText = "") {
+      if (!btn) return;
+
+      const svg = btn.querySelector("svg");
+      const existingImg = btn.querySelector("img.ui-icon");
+
+      const img = document.createElement("img");
+      img.className = "ui-icon";
+      img.alt = altText || iconName;
+      img.loading = "lazy";
+      img.src = getUiIconSrc(iconName);
+
+      img.onerror = () => {
+        img.remove();
+        if (svg) svg.style.display = "";
+      };
+
+      img.onload = () => {
+        if (svg) svg.style.display = "none";
+      };
+
+      if (existingImg) existingImg.remove();
+
+      const badge = btn.querySelector(".badge");
+      if (badge) badge.appendChild(img);
+      else btn.appendChild(img);
+    }
+
+    function applyAllUiIcons() {
+      document.querySelectorAll("button[data-icon]").forEach(btn => {
+        const icon = btn.getAttribute("data-icon");
+        setButtonIcon(btn, icon, icon);
+      });
     }
 
     // ========== TRASH DATABASE ==========
@@ -1113,7 +1192,7 @@
 
       updateAllCoinDisplays();
 
-      // ✅ BGM should play EVERYTIME (we still need user gesture first)
+      // ✅ BGM should play EVERYTIME (still needs user gesture first)
       playBgm();
     }
 
@@ -1258,7 +1337,6 @@
         document.getElementById('timer-display').classList.add('hidden');
       }
 
-      // ✅ always ensure BGM attempts to play
       playBgm();
     }
 
@@ -1338,9 +1416,8 @@
     function onGlobalPointerMove(e){
       if (!dragState) return;
 
-      const touch = e;
-      const x = touch.clientX;
-      const y = touch.clientY;
+      const x = e.clientX;
+      const y = e.clientY;
 
       dragState.card.style.left = (x - dragState.offsetX) + "px";
       dragState.card.style.top  = (y - dragState.offsetY) + "px";
@@ -1480,7 +1557,7 @@
         }
 
         card.onclick = null;
-        // update item reference in drag handler by replacing pointerdown
+
         const itemData = currentGame.trashItems.find(i => i.id === itemId);
         card.onpointerdown = (e) => {
           if (currentGame.isPaused) return;
@@ -1765,7 +1842,6 @@
       saveGame();
       updateAllCoinDisplays();
 
-      // ✅ keep BGM playing (no toggle)
       playBgm();
     }
 
@@ -1790,8 +1866,6 @@
       currentGame.isPaused = true;
       document.getElementById('pause-modal').classList.remove('hidden');
       document.getElementById('pause-modal').classList.add('flex');
-
-      // BGM stays (requirement: music always)
       playBgm();
     }
 
@@ -1799,7 +1873,6 @@
       currentGame.isPaused = false;
       document.getElementById('pause-modal').classList.add('hidden');
       document.getElementById('pause-modal').classList.remove('flex');
-
       playBgm();
     }
 
@@ -1844,7 +1917,10 @@
 
     updateAllCoinDisplays();
 
-    // ✅ start trying BGM as early as possible (will only succeed after user gesture)
+    // ✅ Apply local UI icons (auto) from ui-icons/<data-icon>.png
+    applyAllUiIcons();
+
+    // ✅ Ensure BGM attempts early (will succeed after gesture)
     initBgm();
     playBgm();
   </script>
